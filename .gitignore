@@ -1,2 +1,4 @@
 .vscode
 brute-force/main
+brute-force/main.o
+brute-force/Point.o

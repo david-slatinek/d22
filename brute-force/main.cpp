@@ -1,5 +1,9 @@
 #include <iostream>
 #include <fstream>
+#include <vector>
+#include <bits/stdc++.h>
+
+#include "Point.h"
 
 using namespace std;
 
@@ -43,15 +47,43 @@ int main(int argc, char *argv[])
 
     file.close();
 
-    const int cSize = abs(start_a[0] - end_a[0]) + 1;
-    int coordinates[cSize];
+    int maxSizeA = INT_MIN;
+    int cSizeX = abs(start_a[0] - end_a[0]) + 1;
+    if (cSizeX > maxSizeA)
+        maxSizeA = cSizeX;
+    int coordinatesX[cSizeX];
+    generateCoordinates(start_a[0], end_a[0], coordinatesX);
 
-    generateCoordinates(start_a[0], end_a[0], coordinates);
+    int cSizeY = abs(start_a[1] - end_a[1]) + 1;
+    if (cSizeY > maxSizeA)
+        maxSizeA = cSizeY;
+    int coordinatesY[cSizeY];
+    generateCoordinates(start_a[1], end_a[1], coordinatesY);
 
-    for (const int &x : coordinates)
-        cout << x << " ";
+    int cSizeZ = abs(start_a[2] - end_a[2]) + 1;
+    if (cSizeZ > maxSizeA)
+        maxSizeA = cSizeZ;
+    int coordinatesZ[cSizeZ];
+    generateCoordinates(start_a[2], end_a[2], coordinatesZ);
 
-    cout << endl;
+    vector<Point *> pointsA;
+    for (int i = 0; i < maxSizeA; i++)
+        pointsA.push_back(new Point());
+
+    for (int i = 0; i < cSizeX; i++)
+        pointsA[i]->setX(coordinatesX[i]);
+
+    for (int i = 0; i < cSizeY; i++)
+        pointsA.at(i)->setY(coordinatesY[i]);
+
+    for (int i = 0; i < cSizeZ; i++)
+        pointsA.at(i)->setZ(coordinatesZ[i]);
+
+    for (size_t i = 0; i < pointsA.size(); i++)
+        cout << pointsA.at(i)->toString() << endl;
+
+    for (const auto p : pointsA)
+        delete p;
 
     return 0;
 }
