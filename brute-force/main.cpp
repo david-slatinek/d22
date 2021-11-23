@@ -3,6 +3,20 @@
 
 using namespace std;
 
+void generateCoordinates(int start, const int end, int a[])
+{
+    int counter = 0;
+    while (start != end)
+    {
+        a[counter++] = start;
+        if (start < end)
+            start++;
+        else
+            start--;
+    }
+    a[counter] = start;
+}
+
 int main(int argc, char *argv[])
 {
     if (argc == 1)
@@ -28,5 +42,16 @@ int main(int argc, char *argv[])
     file >> end_b[0] >> end_b[1] >> end_b[2];
 
     file.close();
+
+    const int cSize = abs(start_a[0] - end_a[0]) + 1;
+    int coordinates[cSize];
+
+    generateCoordinates(start_a[0], end_a[0], coordinates);
+
+    for (const int &x : coordinates)
+        cout << x << " ";
+
+    cout << endl;
+
     return 0;
 }

@@ -7,4 +7,4 @@ compile:
 	g++ -Wall -O3 main.cpp -o main
 
 run:
-	./main ../test-data/0-basic.in
+	./main demo.txt
