@@ -28,6 +28,43 @@ bool pathOK(Point a, Point b){
 }
 
 void dronesPath(Drone A, Drone B){
+    vector<Point> pathA;
+    vector<Point> pathB;
+
+    Point a;
+    Point b;
+
+    while(true){
+        if(A.isNext()){
+            a = A.getNext();
+        }
+        else
+        {
+            A.setEnd(true);
+        }
+        if(B.isNext()){
+           b = B.getNext();
+        }
+        else{
+            B.setEnd(true);
+        }
+        if(A.isEnd() && B.isEnd()){
+            break;
+        }
+
+        if(pathOK(a, b)){
+            pathA.push_back(a);
+            pathB.push_back(b);
+        }
+
+    }
+
+
+    for (size_t i = 0; i < pathA.size(); i++)
+    {
+        cout<<"("<<pathA[i].getX()<<" "<<pathA[i].getY()<<" "<<pathA[i].getZ()<<")";
+    }
+
 
 
 }
@@ -100,21 +137,23 @@ int main(int argc, char *argv[])
     generateCoordinates(start_b[2], end_b[2], coordinatesZB);
 
 
-    vector<Point *> pointsA;
-    for (int i = 0; i < maxSizeA; i++)
-        pointsA.push_back(new Point());
+    Drone droneA();
+    Drone droneB();
 
-    for (int i = 0; i < cSizeX; i++)
-        pointsA[i]->setX(coordinatesXA[i]);
+    // for (int i = 0; i < maxSizeA; i++)
+    //     .push_back(Point());
 
-    for (int i = 0; i < cSizeY; i++)
-        pointsA.at(i)->setY(coordinatesYA[i]);
+    // for (int i = 0; i < cSizeX; i++)
+    //     pointsA[i]->setX(coordinatesXA[i]);
 
-    for (int i = 0; i < cSizeZ; i++)
-        pointsA.at(i)->setZ(coordinatesZA[i]);
+    // for (int i = 0; i < cSizeY; i++)
+    //     pointsA.at(i)->setY(coordinatesYA[i]);
 
-    for (size_t i = 0; i < pointsA.size(); i++)
-        cout << pointsA.at(i)->toString() << endl;
+    // for (int i = 0; i < cSizeZ; i++)
+    //     pointsA.at(i)->setZ(coordinatesZA[i]);
+
+    // for (size_t i = 0; i < pointsA.size(); i++)
+    //     cout << pointsA.at(i)->toString() << endl;
 
 
 

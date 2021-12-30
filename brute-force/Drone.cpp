@@ -1,12 +1,16 @@
 #include "Drone.h"
 
-Drone::Drone() {}
+Drone::Drone() {
+    end = false;
+}
 Drone::~Drone() {}
 
 Point Drone::getCurrentPosition() const { return currentPosition; }
 int Drone::getIndex() const { return index; }
 bool Drone::isNext() const { return !(index+1<allCoordinates.size()); }
-Point Drone::getNext() const { return allCoordinates[index+1]; }
+Point Drone::getNext() { return allCoordinates[++index]; }
+bool Drone::isEnd() const { return end; }
+
 
 
 void Drone::setCurrentPosition(Point position) {
@@ -16,4 +20,9 @@ void Drone::setCurrentPosition(Point position) {
 
 }
 
+void Drone::addCoordinate(Point coordinate){
+    allCoordinates.push_back(coordinate);
+}
+
 void Drone::setIndex(int index) { this->index = index; }
+void Drone::setEnd(bool end) { this->end = end; }
