@@ -3,29 +3,40 @@
 Drone::Drone() {
     end = false;
 }
-Drone::Drone(Point startPos, Point endPos, vector<Point*> allPos) {
+Drone::Drone(Point startPos, Point endPos, std::vector<Point*> allPos) {
     this->startPosition = startPos;
     this->endPosition = endPos;
     this->allCoordinates = allPos;
     index = -1;
 }
 
-Drone::~Drone() {}
+Drone::Drone(Point startPos, Point endPos) {
+    this->startPosition = startPos;
+    this->endPosition = endPos;
+    // this->allCoordinates = allPos;
+    index = -1;
+}
+//Drone::~Drone() {}
 
-Point Drone::getCurrentPosition() const { 
-    return currentPosition; 
+Point Drone::getCurrentPosition() const {
+    return currentPosition;
 }
-int Drone::getIndex() const { 
-    return index; 
+
+Point Drone::getPrev(){
+    return *allCoordinates[index-1];
 }
-bool Drone::isNext() const { 
-    return index+1<allCoordinates.size(); 
+
+int Drone::getIndex() const {
+    return index;
 }
-Point Drone::getNext() { 
-    return *allCoordinates[++index]; 
+bool Drone::isNext() const {
+    return (index+1)<allCoordinates.size();
 }
-bool Drone::isEnd() const { 
-    return end; 
+Point Drone::getNext() {
+    return *allCoordinates[++index];
+}
+bool Drone::isEnd() const {
+    return end;
 }
 
 
@@ -37,14 +48,19 @@ void Drone::setCurrentPosition(Point position) {
 
 }
 
+void Drone::addAll(vector<Point*> allPos){
+    allCoordinates = allPos;
+}
+
+
 void Drone::addCoordinate(Point* coordinate){
     allCoordinates.push_back(coordinate);
 }
 
-void Drone::setIndex(int index) { 
-    this->index = index; 
+void Drone::setIndex(int index) {
+    this->index = index;
 }
 
-void Drone::setEnd(bool end) { 
-    this->end = end; 
+void Drone::setEnd(bool end) {
+    this->end = end;
 }

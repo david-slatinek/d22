@@ -20,19 +20,22 @@ private:
     bool end;
 public:
     Drone();
-    Drone(Point startPos, Point endPos, vector<Point*> allPos);
-    virtual ~Drone();
+    Drone(Point startPos, Point endPos, std::vector<Point*> allPos);
+    Drone(Point startPos, Point endPos);
+    //virtual ~Drone();
 
     Point getCurrentPosition() const;
     int getIndex() const;
     bool isNext() const;
     bool isEnd() const;
     Point getNext();
+    Point getPrev();
 
     void addCoordinate(Point* coordinate);
     void setCurrentPosition(Point currentPosition);
     void setIndex(int index);
     void setEnd(bool end);
+    void addAll(vector<Point*> allPos);
 
     //virtual std::string toString() const;
 };

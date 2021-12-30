@@ -1,10 +1,11 @@
 ﻿#include <iostream>
 #include <fstream>
 #include <vector>
+#include <bits/stdc++.h>
 
 #include "Drone.h"
-#include "Point.h"
 
+using namespace std;
 void generateCoordinates(int start, const int end, vector<int> &a)
 {
 	int counter = 0;
@@ -20,9 +21,20 @@ void generateCoordinates(int start, const int end, vector<int> &a)
 }
 
 bool pathOK(Point a, Point b) {
-	return a.getX() != b.getX() && a.getY() != b.getY() && a.getZ() != b.getZ();
+    // vsaj ena izmed koordinat mora biti različna
+    if(a.getX() != b.getX())
+        return true;
+    if(a.getY() != b.getY())
+        return true;
+    if(a.getZ() != b.getZ())
+        return true;
+    return false;
 }
 
+bool pointsOK(Point a, Point b, Point prevA, Point prevB)
+{
+    return (abs(prevA.getX()-a.getX())<=1 && abs(prevA.getY()-a.getY())<=1 && abs(prevA.getZ()-a.getZ())<=1 &&abs(prevB.getX()-b.getX())<=1 && abs(prevB.getY()-b.getY())<=1 && abs(prevB.getZ()-b.getZ())<=1);
+}
 void dronesPath(Drone A, Drone B) {
 	vector<Point> pathA;
 	vector<Point> pathB;
@@ -34,6 +46,7 @@ void dronesPath(Drone A, Drone B) {
 	pathA.push_back(a);
 	pathB.push_back(b);
 
+    // potrebno je preverit še če se točka od trenutne razlikuje za 1
 	while (true) {
 		if (A.isNext()) {
 			a = A.getNext();
@@ -52,8 +65,11 @@ void dronesPath(Drone A, Drone B) {
 			break;
 		}
 
-		if (pathOK(a, b)) {		// TODO - tole mal hecn deluje oz. ne deluje ...
-			pathA.push_back(a);
+		// if (pathOK(a, b) && pointsOK(a, b, A.getCurrentPosition(), B.getCurrentPosition())) {		// TODO - tole mal hecn deluje oz. ne deluje ...
+		if (pathOK(a, b) ) {		// TODO - tole mal hecn deluje oz. ne deluje ...
+			A.setCurrentPosition(a);
+            B.setCurrentPosition(b);
+            pathA.push_back(a);
 			pathB.push_back(b);
 		}
 
@@ -65,7 +81,7 @@ void dronesPath(Drone A, Drone B) {
 	for (size_t i = 0; i < min(pathA.size(), pathB.size()); i++)
 	{
 		cout << pathA[ia].toString() << " " << pathB[ib].toString() << "\n";
-		
+
 		if (ia + 1 < pathA.size()) ia++;
 		if (ib + 1 < pathB.size()) ib++;
 	}
@@ -119,11 +135,12 @@ int main(int argc, char* argv[])
 	generateCoordinates(start_a[2], end_a[2], coordinatesZA);
 
 	// store all posible combinations of coordinates
-	vector<Point*> pointsA;
+	std::vector<Point*> pointsA;
 	int cnt = (cSizeX > 0 ? cSizeX : 1) * (cSizeY > 0 ? cSizeY : 1) * (cSizeZ > 0 ? cSizeZ : 1); // TODO - preveri tole, ker pri velikih cifrah pride do "out of memory exception" (program porabi > 2GB RAM)
 	for (int i = 0; i < cnt; i++)
 		pointsA.push_back(new Point());
 
+    cout<<"-----------COORDINATES A ----------"<<endl;
 	int i = 0;
 	for (int x = 0; x < cSizeX; x++)
 	{
@@ -134,6 +151,7 @@ int main(int argc, char* argv[])
 				pointsA[i]->setX(coordinatesXA[x]);
 				pointsA[i]->setY(coordinatesYA[y]);
 				pointsA[i++]->setZ(coordinatesZA[z]);
+                cout<<"("<<pointsA[i-1]->getX()<<" "<<pointsA[i-1]->getY()<<" "<<pointsA[i-1]->getZ()<<")"<<endl;
 			}
 		}
 	}
@@ -160,12 +178,14 @@ int main(int argc, char* argv[])
 	generateCoordinates(start_b[2], end_b[2], coordinatesZB);
 
 	// store all posible combinations of coordinates
-	vector<Point*> pointsB;
+	std::vector<Point*> pointsB;
 	cnt = (cSizeX > 0 ? cSizeX : 1) * (cSizeY > 0 ? cSizeY : 1) * (cSizeZ > 0 ? cSizeZ : 1); // TODO - preveri tole, ker pri velikih cifrah pride do "out of memory exception" (program porabi > 2GB RAM)
 	for (int i = 0; i < cnt; i++)
 		pointsB.push_back(new Point());
 
 	i = 0;
+    cout<<"-----------COORDINATES B ----------"<<endl;
+
 	for (int x = 0; x < cSizeX; x++)
 	{
 		for (int y = 0; y < cSizeY; y++)
@@ -175,6 +195,8 @@ int main(int argc, char* argv[])
 				pointsB[i]->setX(coordinatesXB[x]);
 				pointsB[i]->setY(coordinatesYB[y]);
 				pointsB[i++]->setZ(coordinatesZB[z]);
+                cout<<"("<<pointsB[i-1]->getX()<<" "<<pointsB[i-1]->getY()<<" "<<pointsB[i-1]->getZ()<<")"<<endl;
+
 			}
 		}
 	}
@@ -200,5 +222,7 @@ int main(int argc, char* argv[])
 
 	// TODO - check if I cleaned everything
 
+
+    // delete droneB;
 	return 0;
 }
