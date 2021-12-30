@@ -1,6 +1,13 @@
 #include "Point.h"
 
 Point::Point() {}
+
+Point::Point(int val[3]) {
+    this->x = val[0];
+    this->y = val[1];
+    this->z = val[2];
+}
+
 Point::~Point() {}
 
 int Point::getX() const { return x; }
@@ -11,7 +18,9 @@ void Point::setX(int x) { this->x = x; }
 void Point::setY(int y) { this->y = y; }
 void Point::setZ(int z) { this->z = z; }
 
-std::string Point::toString() const
+string Point::toString() const
 {
-    return std::to_string(getX()) + ":" + std::to_string(getY()) + ":" + std::to_string(getZ()) + "\n";
+    char* buff = new char[32];
+    sprintf_s(buff, 32, "(%d %d %d)", x, y, z);
+    return buff;
 }

@@ -3,6 +3,8 @@
 
 #include <string>
 
+using namespace std;
+
 class Point
 {
 private:
@@ -10,6 +12,7 @@ private:
 
 public:
     Point();
+    Point(int val[3]);
     virtual ~Point();
 
     int getX() const;
@@ -20,7 +23,7 @@ public:
     void setY(int y);
     void setZ(int z);
 
-    virtual std::string toString() const;
+    virtual string toString() const;
 };
 
 #endif
