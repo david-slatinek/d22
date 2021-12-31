@@ -19,7 +19,9 @@ void generateCoordinates(int start, const int end, vector<int> &a)
 	a.at(counter) = start;
 }
 
+// treba je preveriti še da ne pride do križanja, če pride potem ni OK
 bool pathOK(Point a, Point b) {
+
     // vsaj ena izmed koordinat mora biti različna
     if(a.getX() != b.getX())
         return true;
@@ -32,7 +34,16 @@ bool pathOK(Point a, Point b) {
 
 bool pointsOK(Point a, Point b, Point prevA, Point prevB)
 {
-    return (abs(prevA.getX()-a.getX())<=1 && abs(prevA.getY()-a.getY())<=1 && abs(prevA.getZ()-a.getZ())<=1 &&abs(prevB.getX()-b.getX())<=1 && abs(prevB.getY()-b.getY())<=1 && abs(prevB.getZ()-b.getZ())<=1);
+    if(Point::isSame(b, prevA) && Point::isSame(a, prevB))
+        return false;
+        // vsaj ena izmed koordinat mora biti različna
+    if(a.getX() != b.getX())
+        return true;
+    if(a.getY() != b.getY())
+        return true;
+    if(a.getZ() != b.getZ())
+        return true;
+    return false;
 }
 
 void dronesPath(Drone A, Drone B) {
@@ -63,16 +74,41 @@ void dronesPath(Drone A, Drone B) {
 			break;
 		}
 
-		// if (pathOK(a, b) && pointsOK(a, b, A.getCurrentPosition(), B.getCurrentPosition())) {		// TODO - tole mal hecn deluje oz. ne deluje ...
-		if (pathOK(a, b) ) {		// TODO - tole mal hecn deluje oz. ne deluje ...
+		if (pointsOK(a, b, A.getCurrentPosition(), B.getCurrentPosition())) {		// TODO - tole mal hecn deluje oz. ne deluje ...
+		// if (pathOK(a, b) ) {		// TODO - tole mal hecn deluje oz. ne deluje ...
 			A.setCurrentPosition(a);
             B.setCurrentPosition(b);
-			
+
 			A.addToPath(a);
 			B.addToPath(b);
 		}
 		else {
 			// TODO - A - umik, B nadaljuje
+            // A v bistvu ostane na istem kot je, razen če je trenutni enak kot prvi
+            cout<<"Grem nazaj"<<endl;
+
+            // če smo lahko prejšni dron premaknili, potem tega premaknemo na naslednjo
+            if(A.goBack(a)){
+                // premaknemo se z B dronom, ker smo A umaknili
+                B.addToPath(b);
+
+                // če je možno B še za eno pozicijo premaknemo naprej
+                // if(B.isNext()){
+                //     B.addToPath(B.getNext());
+                //     A.addToPath(A.getCurrentPosition());
+                // }
+
+            }
+            // else{
+            //     A.addToPath(Point(A.getCurrentPosition().getX(), A.getCurrentPosition().getY()-1, A.getCurrentPosition().getZ()));
+            //     B.addToPath(B.getNext());
+            //     if(B.isNext()){
+            //         B.addToPath(B.getNext());
+            //         A.addToPath(Point(A.getCurrentPosition().getX(), A.getCurrentPosition().getY()+1, A.getCurrentPosition().getZ()));
+            //     }
+            // }
+
+
 		}
 
 	}

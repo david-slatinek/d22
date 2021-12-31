@@ -39,6 +39,22 @@ bool Drone::isEnd() const {
     return end;
 }
 
+// vrnemo true, če je bil premik mogoč
+bool Drone::goBack(Point current){
+    // dodamo na pot prejšno in spremenimo index na prejšno
+
+    // če dron ne miruje se premknemo nazaj, sicer še ne vem kaj bi
+    if(!Point::isSame(current, pathToEnd[getPathSize()-1])){
+        addToPath(pathToEnd[getPathSize()-1]);
+        setCurrentPosition(pathToEnd[getPathSize()-1]);
+        index--;
+        return true;
+    }
+    return false;
+
+}
+
+
 
 
 void Drone::setCurrentPosition(Point position) {
@@ -54,6 +70,8 @@ void Drone::addAll(vector<Point*> allPos){
 
 void Drone::addToPath(Point p) {
     this->pathToEnd.push_back(p);
+    setCurrentPosition(pathToEnd[getPathSize()-1]);
+
 }
 
 int Drone::getPathSize() {

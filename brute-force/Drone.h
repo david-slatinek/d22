@@ -38,6 +38,7 @@ public:
     void setIndex(int index);
     void setEnd(bool end);
     void addAll(vector<Point*> allPos);
+    bool goBack(Point current);
 
     void addToPath(Point p);
     int getPathSize();
