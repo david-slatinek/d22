@@ -52,6 +52,18 @@ void Drone::addAll(vector<Point*> allPos){
     allCoordinates = allPos;
 }
 
+void Drone::addToPath(Point p) {
+    this->pathToEnd.push_back(p);
+}
+
+int Drone::getPathSize() {
+    return this->pathToEnd.size();
+}
+
+Point Drone::getCoordinate(int i) {
+    return this->pathToEnd[i];
+}
+
 
 void Drone::addCoordinate(Point* coordinate){
     allCoordinates.push_back(coordinate);

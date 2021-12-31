@@ -16,6 +16,8 @@ private:
     Point endPosition;
     Point currentPosition;
     vector <Point*> allCoordinates;
+    vector <Point> pathToEnd;
+
     int index;
     bool end;
 public:
@@ -36,6 +38,10 @@ public:
     void setIndex(int index);
     void setEnd(bool end);
     void addAll(vector<Point*> allPos);
+
+    void addToPath(Point p);
+    int getPathSize();
+    Point getCoordinate(int i);
 
     //virtual std::string toString() const;
 };

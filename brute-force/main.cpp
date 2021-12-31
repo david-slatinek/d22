@@ -1,9 +1,8 @@
 ﻿#include <iostream>
 #include <fstream>
 #include <vector>
-#include <bits/stdc++.h>
-
 #include "Drone.h"
+#include "Point.h"
 
 using namespace std;
 void generateCoordinates(int start, const int end, vector<int> &a)
@@ -35,24 +34,23 @@ bool pointsOK(Point a, Point b, Point prevA, Point prevB)
 {
     return (abs(prevA.getX()-a.getX())<=1 && abs(prevA.getY()-a.getY())<=1 && abs(prevA.getZ()-a.getZ())<=1 &&abs(prevB.getX()-b.getX())<=1 && abs(prevB.getY()-b.getY())<=1 && abs(prevB.getZ()-b.getZ())<=1);
 }
+
 void dronesPath(Drone A, Drone B) {
-	vector<Point> pathA;
-	vector<Point> pathB;
 
 	Point a = A.getNext();
 	Point b = B.getNext();
 
 	// accept starting points
-	pathA.push_back(a);
-	pathB.push_back(b);
+	A.addToPath(a);
+	B.addToPath(b);
+
 
     // potrebno je preverit še če se točka od trenutne razlikuje za 1
 	while (true) {
 		if (A.isNext()) {
 			a = A.getNext();
 		}
-		else
-		{
+		else {
 			A.setEnd(true);
 		}
 		if (B.isNext()) {
@@ -69,21 +67,25 @@ void dronesPath(Drone A, Drone B) {
 		if (pathOK(a, b) ) {		// TODO - tole mal hecn deluje oz. ne deluje ...
 			A.setCurrentPosition(a);
             B.setCurrentPosition(b);
-            pathA.push_back(a);
-			pathB.push_back(b);
+			
+			A.addToPath(a);
+			B.addToPath(b);
+		}
+		else {
+			// TODO - A - umik, B nadaljuje
 		}
 
 	}
 
-	cout << endl << "Rezultat" << endl;
+	std::cout << endl << "Rezultat" << endl;
 	cout << "------------------------" << endl;
 	int ia = 0, ib = 0;
-	for (size_t i = 0; i < min(pathA.size(), pathB.size()); i++)
+	for (size_t i = 0; i < min(A.getPathSize(), B.getPathSize()); i++)
 	{
-		cout << pathA[ia].toString() << " " << pathB[ib].toString() << "\n";
+		cout << A.getCoordinate(ia).toString() << " " << B.getCoordinate(ib).toString() << "\n";
 
-		if (ia + 1 < pathA.size()) ia++;
-		if (ib + 1 < pathB.size()) ib++;
+		if (ia + 1 < A.getPathSize()) ia++;
+		if (ib + 1 < B.getPathSize()) ib++;
 	}
 }
 
@@ -151,7 +153,7 @@ int main(int argc, char* argv[])
 				pointsA[i]->setX(coordinatesXA[x]);
 				pointsA[i]->setY(coordinatesYA[y]);
 				pointsA[i++]->setZ(coordinatesZA[z]);
-                cout<<"("<<pointsA[i-1]->getX()<<" "<<pointsA[i-1]->getY()<<" "<<pointsA[i-1]->getZ()<<")"<<endl;
+                //cout<<"("<<pointsA[i-1]->getX()<<" "<<pointsA[i-1]->getY()<<" "<<pointsA[i-1]->getZ()<<")"<<endl;
 			}
 		}
 	}
@@ -195,8 +197,7 @@ int main(int argc, char* argv[])
 				pointsB[i]->setX(coordinatesXB[x]);
 				pointsB[i]->setY(coordinatesYB[y]);
 				pointsB[i++]->setZ(coordinatesZB[z]);
-                cout<<"("<<pointsB[i-1]->getX()<<" "<<pointsB[i-1]->getY()<<" "<<pointsB[i-1]->getZ()<<")"<<endl;
-
+                //cout<<"("<<pointsB[i-1]->getX()<<" "<<pointsB[i-1]->getY()<<" "<<pointsB[i-1]->getZ()<<")"<<endl;
 			}
 		}
 	}
