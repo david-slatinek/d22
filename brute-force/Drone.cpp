@@ -1,12 +1,19 @@
 #include "Drone.h"
 
 Drone::Drone() {
-    end = false;
+    this->end = false;
+    this->index = -1;
 }
-Drone::Drone(Point startPos, Point endPos, std::vector<Point*> allPos) {
+Drone::Drone(Point startPos, Point endPos, std::vector<Point> allPos) {
     this->startPosition = startPos;
     this->endPosition = endPos;
     this->allCoordinates = allPos;
+
+    for (int i = 0; i < (int)allPos.size(); i++)
+    {
+        this->edges.push_back(vector<bool>(allPos.size(), false));
+    }
+
     index = -1;
 }
 
@@ -23,39 +30,25 @@ Point Drone::getCurrentPosition() const {
 }
 
 Point Drone::getPrev(){
-    return *allCoordinates[index-1];
+    return allCoordinates[index-1];
 }
 
 int Drone::getIndex() const {
     return index;
 }
 bool Drone::isNext() const {
-    return (index+1)<allCoordinates.size();
+    return (index + 1) < (int)allCoordinates.size();
 }
 Point Drone::getNext() {
-    return *allCoordinates[++index];
+    return allCoordinates[++index];
 }
 bool Drone::isEnd() const {
     return end;
 }
 
-// vrnemo true, če je bil premik mogoč
-bool Drone::goBack(Point current){
-    // dodamo na pot prejšno in spremenimo index na prejšno
-
-    // če dron ne miruje se premknemo nazaj, sicer še ne vem kaj bi
-    if(!Point::isSame(current, pathToEnd[getPathSize()-1])){
-        addToPath(pathToEnd[getPathSize()-1]);
-        setCurrentPosition(pathToEnd[getPathSize()-1]);
-        index--;
-        return true;
-    }
-    return false;
-
+bool Drone::IsAtEnd() {
+    return this->pathToEnd.back() == this->endPosition;
 }
-
-
-
 
 void Drone::setCurrentPosition(Point position) {
     currentPosition.setX(position.getX());
@@ -64,14 +57,13 @@ void Drone::setCurrentPosition(Point position) {
 
 }
 
-void Drone::addAll(vector<Point*> allPos){
+void Drone::addAll(vector<Point> allPos){
     allCoordinates = allPos;
 }
 
 void Drone::addToPath(Point p) {
     this->pathToEnd.push_back(p);
-    setCurrentPosition(pathToEnd[getPathSize()-1]);
-
+    this->currentPosition = p;
 }
 
 int Drone::getPathSize() {
@@ -82,8 +74,26 @@ Point Drone::getCoordinate(int i) {
     return this->pathToEnd[i];
 }
 
+void Drone::GenerateEdges() {
+    for (int i = 0; i < (int)allCoordinates.size(); i++) {
+        for (int j = i; j < (int)allCoordinates.size(); j++) {
+            this->edges[i][j] = true;
+        }
+    }
+}
 
-void Drone::addCoordinate(Point* coordinate){
+bool Drone::ValidEdge() {
+    auto it = find(this->allCoordinates.begin(), this->allCoordinates.end(), this->pathToEnd.back());
+    if (it != allCoordinates.end()) {
+        int i = it - allCoordinates.begin();
+
+        return this->edges[index][i];
+    }
+    return false;
+}
+
+
+void Drone::addCoordinate(Point coordinate){
     allCoordinates.push_back(coordinate);
 }
 

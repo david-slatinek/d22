@@ -13,7 +13,6 @@ private:
 public:
     Point();
     Point(int val[3]);
-    Point(int x, int y, int z);
     virtual ~Point();
 
     int getX() const;
@@ -24,9 +23,9 @@ public:
     void setY(int y);
     void setZ(int z);
 
-    virtual string toString() const;
+    friend bool operator== (Point p1, Point p2);
 
-    static bool isSame(Point a, Point b);
+    virtual string toString() const;
 };
 
 #endif

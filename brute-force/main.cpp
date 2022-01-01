@@ -5,6 +5,7 @@
 #include "Point.h"
 
 using namespace std;
+
 void generateCoordinates(int start, const int end, vector<int> &a)
 {
 	int counter = 0;
@@ -19,9 +20,7 @@ void generateCoordinates(int start, const int end, vector<int> &a)
 	a.at(counter) = start;
 }
 
-// treba je preveriti še da ne pride do križanja, če pride potem ni OK
 bool pathOK(Point a, Point b) {
-
     // vsaj ena izmed koordinat mora biti različna
     if(a.getX() != b.getX())
         return true;
@@ -34,19 +33,13 @@ bool pathOK(Point a, Point b) {
 
 bool pointsOK(Point a, Point b, Point prevA, Point prevB)
 {
-    if(Point::isSame(b, prevA) && Point::isSame(a, prevB))
-        return false;
-        // vsaj ena izmed koordinat mora biti različna
-    if(a.getX() != b.getX())
-        return true;
-    if(a.getY() != b.getY())
-        return true;
-    if(a.getZ() != b.getZ())
-        return true;
-    return false;
+    return (abs(prevA.getX()-a.getX())<=1 && abs(prevA.getY()-a.getY())<=1 && abs(prevA.getZ()-a.getZ())<=1 &&abs(prevB.getX()-b.getX())<=1 && abs(prevB.getY()-b.getY())<=1 && abs(prevB.getZ()-b.getZ())<=1);
 }
 
+
 void dronesPath(Drone A, Drone B) {
+	A.GenerateEdges();
+	B.GenerateEdges();
 
 	Point a = A.getNext();
 	Point b = B.getNext();
@@ -55,68 +48,79 @@ void dronesPath(Drone A, Drone B) {
 	A.addToPath(a);
 	B.addToPath(b);
 
+	bool aStil = true, bStil = true;
 
-    // potrebno je preverit še če se točka od trenutne razlikuje za 1
-	while (true) {
+	bool endA = A.IsAtEnd();
+	bool endB = B.IsAtEnd();
+	while (!endA || !endB) {
+		a = A.getCurrentPosition();
+		b = B.getCurrentPosition();
+		aStil = true;
+		bStil = true;
+
 		if (A.isNext()) {
 			a = A.getNext();
-		}
-		else {
-			A.setEnd(true);
+			aStil = false;
 		}
 		if (B.isNext()) {
 			b = B.getNext();
+			bStil = false;
+		}
+
+		if (aStil && !bStil) {
+			if (B.ValidEdge() && pathOK(a, b)) {
+				B.addToPath(b);
+			} 
+			else {
+				// TODO - BACKTRACK
+			}
+		} 
+		else if (!aStil && bStil) {
+			if (A.ValidEdge() && pathOK(a, b)) {
+				A.addToPath(a);
+			}
+			else {
+				// TODO - BACKTRACK
+			}
 		}
 		else {
-			B.setEnd(true);
-		}
-		if (A.isEnd() && B.isEnd()) {
-			break;
-		}
+			if (A.isNext()) a = A.getNext();
+			if (B.isNext()) b = B.getNext();
+			 
+			if (!pathOK(a, b)) {
+				a = A.getCurrentPosition();
+				if (B.ValidEdge()) {
+					B.addToPath(b);
+				}
+				else {
+					// TODO - BACKTRACK
+				}
+			}
+			else {
+				if (A.ValidEdge()) {
+					A.addToPath(a);
+				} 
+				else {
+					// TODO - BACKTRACK
+				}
 
-		if (pointsOK(a, b, A.getCurrentPosition(), B.getCurrentPosition())) {		// TODO - tole mal hecn deluje oz. ne deluje ...
-		// if (pathOK(a, b) ) {		// TODO - tole mal hecn deluje oz. ne deluje ...
-			A.setCurrentPosition(a);
-            B.setCurrentPosition(b);
-
-			A.addToPath(a);
-			B.addToPath(b);
-		}
-		else {
-			// TODO - A - umik, B nadaljuje
-            // A v bistvu ostane na istem kot je, razen če je trenutni enak kot prvi
-            cout<<"Grem nazaj"<<endl;
-
-            // če smo lahko prejšni dron premaknili, potem tega premaknemo na naslednjo
-            if(A.goBack(a)){
-                // premaknemo se z B dronom, ker smo A umaknili
-                B.addToPath(b);
-
-                // če je možno B še za eno pozicijo premaknemo naprej
-                // if(B.isNext()){
-                //     B.addToPath(B.getNext());
-                //     A.addToPath(A.getCurrentPosition());
-                // }
-
-            }
-            // else{
-            //     A.addToPath(Point(A.getCurrentPosition().getX(), A.getCurrentPosition().getY()-1, A.getCurrentPosition().getZ()));
-            //     B.addToPath(B.getNext());
-            //     if(B.isNext()){
-            //         B.addToPath(B.getNext());
-            //         A.addToPath(Point(A.getCurrentPosition().getX(), A.getCurrentPosition().getY()+1, A.getCurrentPosition().getZ()));
-            //     }
-            // }
-
-
+				if (B.ValidEdge()) {
+					B.addToPath(b);
+				}
+				else {
+					// TODO - BACKTRACK
+				}
+			}
 		}
 
+		endA = A.IsAtEnd();
+		endB = B.IsAtEnd();
 	}
 
 	std::cout << endl << "Rezultat" << endl;
 	cout << "------------------------" << endl;
 	int ia = 0, ib = 0;
-	for (size_t i = 0; i < min(A.getPathSize(), B.getPathSize()); i++)
+	for (size_t i = 0; i < (int)min(A.getPathSize(), B.getPathSize()); i++)
 	{
 		cout << A.getCoordinate(ia).toString() << " " << B.getCoordinate(ib).toString() << "\n";
 
@@ -173,10 +177,10 @@ int main(int argc, char* argv[])
 	generateCoordinates(start_a[2], end_a[2], coordinatesZA);
 
 	// store all posible combinations of coordinates
-	std::vector<Point*> pointsA;
+	std::vector<Point> pointsA;
 	int cnt = (cSizeX > 0 ? cSizeX : 1) * (cSizeY > 0 ? cSizeY : 1) * (cSizeZ > 0 ? cSizeZ : 1); // TODO - preveri tole, ker pri velikih cifrah pride do "out of memory exception" (program porabi > 2GB RAM)
 	for (int i = 0; i < cnt; i++)
-		pointsA.push_back(new Point());
+		pointsA.push_back(Point());
 
     cout<<"-----------COORDINATES A ----------"<<endl;
 	int i = 0;
@@ -186,9 +190,9 @@ int main(int argc, char* argv[])
 		{
 			for (int z = 0; z < cSizeZ; z++)
 			{
-				pointsA[i]->setX(coordinatesXA[x]);
-				pointsA[i]->setY(coordinatesYA[y]);
-				pointsA[i++]->setZ(coordinatesZA[z]);
+				pointsA[i].setX(coordinatesXA[x]);
+				pointsA[i].setY(coordinatesYA[y]);
+				pointsA[i++].setZ(coordinatesZA[z]);
                 //cout<<"("<<pointsA[i-1]->getX()<<" "<<pointsA[i-1]->getY()<<" "<<pointsA[i-1]->getZ()<<")"<<endl;
 			}
 		}
@@ -216,10 +220,10 @@ int main(int argc, char* argv[])
 	generateCoordinates(start_b[2], end_b[2], coordinatesZB);
 
 	// store all posible combinations of coordinates
-	std::vector<Point*> pointsB;
+	std::vector<Point> pointsB;
 	cnt = (cSizeX > 0 ? cSizeX : 1) * (cSizeY > 0 ? cSizeY : 1) * (cSizeZ > 0 ? cSizeZ : 1); // TODO - preveri tole, ker pri velikih cifrah pride do "out of memory exception" (program porabi > 2GB RAM)
 	for (int i = 0; i < cnt; i++)
-		pointsB.push_back(new Point());
+		pointsB.push_back(Point());
 
 	i = 0;
     cout<<"-----------COORDINATES B ----------"<<endl;
@@ -230,9 +234,9 @@ int main(int argc, char* argv[])
 		{
 			for (int z = 0; z < cSizeZ; z++)
 			{
-				pointsB[i]->setX(coordinatesXB[x]);
-				pointsB[i]->setY(coordinatesYB[y]);
-				pointsB[i++]->setZ(coordinatesZB[z]);
+				pointsB[i].setX(coordinatesXB[x]);
+				pointsB[i].setY(coordinatesYB[y]);
+				pointsB[i++].setZ(coordinatesZB[z]);
                 //cout<<"("<<pointsB[i-1]->getX()<<" "<<pointsB[i-1]->getY()<<" "<<pointsB[i-1]->getZ()<<")"<<endl;
 			}
 		}
@@ -252,10 +256,10 @@ int main(int argc, char* argv[])
 
 	dronesPath(droneA, droneB);
 
-	for (const auto p : pointsA)
+	/*for (const auto p : pointsA)
 		delete p;
 	for (const auto p : pointsB)
-		delete p;
+		delete p;*/
 
 	// TODO - check if I cleaned everything
 

@@ -15,14 +15,15 @@ private:
     Point startPosition;
     Point endPosition;
     Point currentPosition;
-    vector <Point*> allCoordinates;
+    vector <Point> allCoordinates;
     vector <Point> pathToEnd;
+    vector <vector<bool>> edges;
 
-    int index;
+    int index = -1;
     bool end;
 public:
     Drone();
-    Drone(Point startPos, Point endPos, std::vector<Point*> allPos);
+    Drone(Point startPos, Point endPos, std::vector<Point> allPos);
     Drone(Point startPos, Point endPos);
     //virtual ~Drone();
 
@@ -33,16 +34,20 @@ public:
     Point getNext();
     Point getPrev();
 
-    void addCoordinate(Point* coordinate);
+    void addCoordinate(Point coordinate);
     void setCurrentPosition(Point currentPosition);
     void setIndex(int index);
     void setEnd(bool end);
-    void addAll(vector<Point*> allPos);
-    bool goBack(Point current);
+    void addAll(vector<Point> allPos);
 
     void addToPath(Point p);
     int getPathSize();
     Point getCoordinate(int i);
+    
+    void GenerateEdges();
+    bool ValidEdge();
+
+    bool IsAtEnd();
 
     //virtual std::string toString() const;
 };
