@@ -27,9 +27,7 @@ void Point::setZ(int z) { this->z = z; }
 
 string Point::toString() const
 {
-    char* buff = new char[32];
-    sprintf_s(buff, 32, "(%d %d %d)", x, y, z);
-    return buff;
+    return std::to_string(getX()) + ":" + std::to_string(getY()) + ":" + std::to_string(getZ()) + "\n";
 }
 
 bool Point::isSame(Point a, Point b){

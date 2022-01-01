@@ -3,6 +3,7 @@
 #include <vector>
 #include "Drone.h"
 #include "Point.h"
+#include <climits>
 
 using namespace std;
 void generateCoordinates(int start, const int end, vector<int> &a)
