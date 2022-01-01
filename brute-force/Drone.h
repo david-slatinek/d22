@@ -39,13 +39,17 @@ public:
     void setIndex(int index);
     void setEnd(bool end);
     void addAll(vector<Point> allPos);
+    void addToPathAtIndex(int i, Point p);
+    void backtrack(Point p);
+    void removeCoordinateAt(int i);
 
     void addToPath(Point p);
     int getPathSize();
     Point getCoordinate(int i);
-    
+
+
     void GenerateEdges();
-    bool ValidEdge();
+    bool ValidEdge(Point p);
 
     bool IsAtEnd();
 

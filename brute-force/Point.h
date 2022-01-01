@@ -13,6 +13,7 @@ private:
 public:
     Point();
     Point(int val[3]);
+    Point(int x, int y, int z);
     virtual ~Point();
 
     int getX() const;

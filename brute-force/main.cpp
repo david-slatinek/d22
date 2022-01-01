@@ -37,97 +37,293 @@ bool pointsOK(Point a, Point b, Point prevA, Point prevB)
 }
 
 
-void dronesPath(Drone A, Drone B) {
-	A.GenerateEdges();
-	B.GenerateEdges();
+void bruteforce(Drone A, Drone B){
+    // za vsak dron zgeneriramo popolno pot, potem pa se izognemo trčenjem
+    A.GenerateEdges();
+    B.GenerateEdges();
 
-	Point a = A.getNext();
-	Point b = B.getNext();
+    Point a = A.getNext();
+    Point b = B.getNext();
 
-	// accept starting points
-	A.addToPath(a);
-	B.addToPath(b);
+    // accept starting points
+    A.addToPath(a);
+    B.addToPath(b);
 
-	bool aStil = true, bStil = true;
-
-	bool endA = A.IsAtEnd();
-	bool endB = B.IsAtEnd();
-	while (!endA || !endB) {
-		a = A.getCurrentPosition();
-		b = B.getCurrentPosition();
-		aStil = true;
-		bStil = true;
-
-		if (A.isNext()) {
+    while(true){
+        if (A.isNext()) {
 			a = A.getNext();
-			aStil = false;
 		}
+        else{
+            A.setEnd(true);
+        }
 		if (B.isNext()) {
 			b = B.getNext();
-			bStil = false;
 		}
+        else{
+            B.setEnd(true);
+        }
+        if(A.isEnd() && B.isEnd()){
+                    break;
+                }
+        if(A.ValidEdge(a)){
+            A.addToPath(a);
+        }
 
-		if (aStil && !bStil) {
-			if (B.ValidEdge() && pathOK(a, b)) {
-				B.addToPath(b);
-			} 
-			else {
-				// TODO - BACKTRACK
-			}
-		} 
-		else if (!aStil && bStil) {
-			if (A.ValidEdge() && pathOK(a, b)) {
-				A.addToPath(a);
-			}
-			else {
-				// TODO - BACKTRACK
-			}
-		}
-		else {
-			if (A.isNext()) a = A.getNext();
-			if (B.isNext()) b = B.getNext();
-			 
-			if (!pathOK(a, b)) {
-				a = A.getCurrentPosition();
-				if (B.ValidEdge()) {
-					B.addToPath(b);
-				}
-				else {
-					// TODO - BACKTRACK
-				}
-			}
-			else {
-				if (A.ValidEdge()) {
-					A.addToPath(a);
-				} 
-				else {
-					// TODO - BACKTRACK
-				}
+        if(B.ValidEdge(b)){
+            B.addToPath(b);
+        }
 
-				if (B.ValidEdge()) {
-					B.addToPath(b);
-				}
-				else {
-					// TODO - BACKTRACK
-				}
-			}
-		}
 
-		endA = A.IsAtEnd();
-		endB = B.IsAtEnd();
-	}
+    }
 
-	std::cout << endl << "Rezultat" << endl;
-	cout << "------------------------" << endl;
-	int ia = 0, ib = 0;
-	for (size_t i = 0; i < (int)min(A.getPathSize(), B.getPathSize()); i++)
-	{
-		cout << A.getCoordinate(ia).toString() << " " << B.getCoordinate(ib).toString() << "\n";
 
-		if (ia + 1 < A.getPathSize()) ia++;
-		if (ib + 1 < B.getPathSize()) ib++;
-	}
+
+    // preverimo če kje trčita
+    for (size_t i = 0; i < A.getPathSize()-2; i++)
+    {
+        // če je prišlo do trka, bo B šel okoli te točke
+        if(A.getCoordinate(i+1) == B.getCoordinate(i+1)){
+            // shranimo točko pred točko in točko trka
+            Point begin = B.getCoordinate(i);
+            Point collision = B.getCoordinate(i+1);
+            Point end = B.getCoordinate(i+2);
+            Point between_1(0, 0, 0);
+            Point between_2(0, 0, 0);
+            B.removeCoordinateAt(i+1);
+            // izračunamo razlike
+            int beginX = collision.getX() - begin.getX();
+            int beginY = collision.getY() - begin.getY();
+            int beginZ = collision.getZ() - begin.getZ();
+
+            int endX = end.getX() - collision.getX();
+            int endY = end.getY() - collision.getY();
+            int endZ = end.getZ() - collision.getZ();
+
+            int moveX = 0;
+            int moveY = 0;
+            int moveZ = 0;
+
+            if(abs(beginX) > 0){
+                // premaknemo po y, da se izognemo trku po x
+                between_1.setX(begin.getX());
+                between_1.setY(begin.getY()+1);
+                between_1.setZ(begin.getZ());
+
+                // ustrezno premaknemo vzporedno do naslednje tocke
+                between_2.setX(collision.getX());
+                between_2.setY(collision.getY()+1);
+                between_2.setZ(collision.getZ());
+
+                moveY = -1;
+            }
+            if(abs(beginY) > 0){
+                // premaknemo po x
+                between_1.setX(begin.getX()+1);
+                between_1.setY(begin.getY());
+                between_1.setZ(begin.getZ());
+
+                // ustrezno premaknemo vzporedno do naslednje tocke
+                between_2.setX(collision.getX()+1);
+                between_2.setY(collision.getY());
+                between_2.setZ(collision.getZ());
+
+                moveX = -1;
+            }
+            if(abs(beginZ) > 0){
+                // premaknemo po x
+                between_1.setX(begin.getX()+1);
+                between_1.setY(begin.getY());
+                between_1.setZ(begin.getZ());
+
+                // ustrezno premaknemo vzporedno do naslednje tocke
+                between_2.setX(collision.getX()+1);
+                between_2.setY(collision.getY());
+                between_2.setZ(collision.getZ());
+
+                moveX = -1;
+            }
+
+            // dodamo v pot
+            A.addToPathAtIndex(i+1, A.getCoordinate(i+1));
+            A.addToPathAtIndex(i+1, A.getCoordinate(i+1));
+
+            B.addToPathAtIndex(i+1, between_1);
+            B.addToPathAtIndex(i+2, between_2);
+
+            if(abs(endX) > 0){
+                // premaknemo po y, da se izognemo trku po x
+                between_1.setX(end.getX());
+                between_1.setY(collision.getY()+1);
+                between_1.setZ(end.getZ());
+
+                // ustrezno premaknemo vzporedno do naslednje tocke
+                between_2.setX(end.getX());
+                between_2.setY(end.getY());
+                between_2.setZ(end.getZ());
+            }
+            if(abs(endY) > 0){
+                // premaknemo po x
+                between_1.setX(collision.getX()+1);
+                between_1.setY(end.getY());
+                between_1.setZ(end.getZ());
+
+                // ustrezno premaknemo vzporedno do naslednje tocke
+                between_2.setX(end.getX());
+                between_2.setY(end.getY());
+                between_2.setZ(end.getZ());
+            }
+            if(abs(endY) > 0){
+                // premaknemo po x
+                between_1.setX(collision.getX()+1);
+                between_1.setY(end.getY());
+                between_1.setZ(end.getZ());
+
+                // ustrezno premaknemo vzporedno do naslednje tocke
+                between_2.setX(end.getX());
+                between_2.setY(end.getY());
+                between_2.setZ(end.getZ());
+            }
+
+            // dodamo v pot
+            A.addToPathAtIndex(i+2, A.getCoordinate(i+1));
+            A.addToPathAtIndex(i+2, A.getCoordinate(i+1));
+
+            B.addToPathAtIndex(i+3, between_1);
+            B.addToPathAtIndex(i+4, between_2);
+            i+=4;
+
+
+
+        }
+
+        // preverimo, če je prišlo do izmenjave pozicij
+        if(i > 0 && A.getCoordinate(i-1) == B.getCoordinate(i) && A.getCoordinate(i) == B.getCoordinate(i-1)){
+
+        }
+    }
+
+    std::cout << endl << "Rezultat" << endl;
+            cout << "------------------------" << endl;
+            int ia = 0, ib = 0;
+            for (size_t i = 0; i < (int)min(A.getPathSize(), B.getPathSize()); i++)
+            {
+                cout << A.getCoordinate(ia).toString() << " " << B.getCoordinate(ib).toString() << "\n";
+
+                if (ia + 1 < A.getPathSize()) ia++;
+                if (ib + 1 < B.getPathSize()) ib++;
+            }
+
+
+    // std::cout << endl << "Rezultat" << endl;
+	// cout << "------------------------" << endl;
+	// int ia = 0, ib = 0;
+	// for (size_t i = 0; i < (int)min(A.getPathSize(), B.getPathSize()); i++)
+	// {
+	// 	cout << A.getCoordinate(ia).toString() << " " << B.getCoordinate(ib).toString() << "\n";
+
+	// 	if (ia + 1 < A.getPathSize()) ia++;
+	// 	if (ib + 1 < B.getPathSize()) ib++;
+	// }
+
 }
+
+
+// void dronesPath(Drone A, Drone B) {
+// 	A.GenerateEdges();
+// 	B.GenerateEdges();
+
+// 	Point a = A.getNext();
+// 	Point b = B.getNext();
+
+// 	// accept starting points
+// 	A.addToPath(a);
+// 	B.addToPath(b);
+
+// 	bool aStil = true, bStil = true;
+
+// 	bool endA = A.IsAtEnd();
+// 	bool endB = B.IsAtEnd();
+// 	while (!endA || !endB) {
+// 		a = A.getCurrentPosition();
+// 		b = B.getCurrentPosition();
+// 		aStil = true;
+// 		bStil = true;
+
+// 		if (A.isNext()) {
+// 			a = A.getNext();
+// 			aStil = false;
+// 		}
+// 		if (B.isNext()) {
+// 			b = B.getNext();
+// 			bStil = false;
+// 		}
+
+// 		if (aStil && !bStil) {
+// 			if (B.ValidEdge() && pathOK(a, b)) {
+// 				B.addToPath(b);
+// 			}
+// 			else {
+// 				// TODO - BACKTRACK
+//                 A.backtrack(a);
+// 			}
+// 		}
+// 		else if (!aStil && bStil) {
+// 			if (A.ValidEdge() && pathOK(a, b)) {
+// 				A.addToPath(a);
+// 			}
+// 			else {
+// 				// TODO - BACKTRACK
+//                 B.backtrack(b);
+// 			}
+// 		}
+// 		else {
+// 			if (A.isNext()) a = A.getNext();
+// 			if (B.isNext()) b = B.getNext();
+
+// 			if (!pathOK(a, b)) {
+// 				a = A.getCurrentPosition();
+// 				if (B.ValidEdge()) {
+// 					B.addToPath(b);
+// 				}
+// 				else {
+//                     A.backtrack(a);
+// 					// TODO - BACKTRACK
+// 				}
+// 			}
+// 			else {
+// 				if (A.ValidEdge()) {
+// 					A.addToPath(a);
+// 				}
+// 				else {
+//                     B.backtrack(b);
+// 					// TODO - BACKTRACK
+// 				}
+
+// 				if (B.ValidEdge()) {
+// 					B.addToPath(b);
+// 				}
+// 				else {
+//                     A.backtrack(a);
+// 					// TODO - BACKTRACK
+// 				}
+// 			}
+// 		}
+
+// 		endA = A.IsAtEnd();
+// 		endB = B.IsAtEnd();
+// 	}
+
+// 	std::cout << endl << "Rezultat" << endl;
+// 	cout << "------------------------" << endl;
+// 	int ia = 0, ib = 0;
+// 	for (size_t i = 0; i < (int)min(A.getPathSize(), B.getPathSize()); i++)
+// 	{
+// 		cout << A.getCoordinate(ia).toString() << " " << B.getCoordinate(ib).toString() << "\n";
+
+// 		if (ia + 1 < A.getPathSize()) ia++;
+// 		if (ib + 1 < B.getPathSize()) ib++;
+// 	}
+// }
 
 int main(int argc, char* argv[])
 {
@@ -254,8 +450,8 @@ int main(int argc, char* argv[])
 	for (size_t i = 0; i < pointsB.size(); i++)
 		cout << pointsB.at(i)->toString() << endl;*/
 
-	dronesPath(droneA, droneB);
-
+	//dronesPath(droneA, droneB);
+    bruteforce(droneA, droneB);
 	/*for (const auto p : pointsA)
 		delete p;
 	for (const auto p : pointsB)

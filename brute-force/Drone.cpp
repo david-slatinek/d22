@@ -57,6 +57,18 @@ void Drone::setCurrentPosition(Point position) {
 
 }
 
+
+void Drone::backtrack(Point p){
+    // če bi premik nazaj pomenil, da bi se premaknili na enako pozicijo
+    if(p == currentPosition){
+        cout<<"Ne vem kaj storiti"<<endl;
+    }
+    else{
+        index--;
+        addToPath(pathToEnd[getPathSize()-1]);
+    }
+}
+
 void Drone::addAll(vector<Point> allPos){
     allCoordinates = allPos;
 }
@@ -82,16 +94,22 @@ void Drone::GenerateEdges() {
     }
 }
 
-bool Drone::ValidEdge() {
-    auto it = find(this->allCoordinates.begin(), this->allCoordinates.end(), this->pathToEnd.back());
-    if (it != allCoordinates.end()) {
-        int i = it - allCoordinates.begin();
-
-        return this->edges[index][i];
+bool Drone::ValidEdge(Point p) {
+    if(abs(p.getX()-currentPosition.getX())<=1 && abs(p.getY()-currentPosition.getY()) <=1 && abs(p.getZ()-currentPosition.getZ())<=1 ){
+        return true;
     }
-    return false;
+    else return false;
 }
 
+void Drone::removeCoordinateAt(int i){
+    pathToEnd.erase(pathToEnd.begin()+i);
+}
+
+
+void Drone::addToPathAtIndex(int i, Point p){
+
+    pathToEnd.insert(pathToEnd.begin() + i, p);
+}
 
 void Drone::addCoordinate(Point coordinate){
     allCoordinates.push_back(coordinate);
