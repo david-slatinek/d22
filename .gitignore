@@ -3,3 +3,4 @@ brute-force/main
 brute-force/main.o
 brute-force/Point.o
 brute-force/Drone.o
+brute-force/main.exe
