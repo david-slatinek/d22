@@ -114,7 +114,7 @@ void bruteforce(Drone A, Drone B){
                 between_2.setY(collision.getY()+1);
                 between_2.setZ(collision.getZ());
 
-                moveY = -1;
+                moveY = 1;
             }
             if(abs(beginY) > 0){
                 // premaknemo po x
@@ -127,7 +127,7 @@ void bruteforce(Drone A, Drone B){
                 between_2.setY(collision.getY());
                 between_2.setZ(collision.getZ());
 
-                moveX = -1;
+                moveX = 1;
             }
             if(abs(beginZ) > 0){
                 // premaknemo po x
@@ -140,7 +140,7 @@ void bruteforce(Drone A, Drone B){
                 between_2.setY(collision.getY());
                 between_2.setZ(collision.getZ());
 
-                moveX = -1;
+                moveX = 1;
             }
 
             // dodamo v pot
@@ -150,39 +150,14 @@ void bruteforce(Drone A, Drone B){
             B.addToPathAtIndex(i+1, between_1);
             B.addToPathAtIndex(i+2, between_2);
 
-            if(abs(endX) > 0){
-                // premaknemo po y, da se izognemo trku po x
-                between_1.setX(end.getX());
-                between_1.setY(collision.getY()+1);
-                between_1.setZ(end.getZ());
 
-                // ustrezno premaknemo vzporedno do naslednje tocke
-                between_2.setX(end.getX());
-                between_2.setY(end.getY());
-                between_2.setZ(end.getZ());
-            }
-            if(abs(endY) > 0){
-                // premaknemo po x
-                between_1.setX(collision.getX()+1);
-                between_1.setY(end.getY());
-                between_1.setZ(end.getZ());
+            between_1.setX(end.getX()+moveX);
+            between_1.setY(end.getY()+moveY);
+            between_1.setZ(end.getZ());
 
-                // ustrezno premaknemo vzporedno do naslednje tocke
-                between_2.setX(end.getX());
-                between_2.setY(end.getY());
-                between_2.setZ(end.getZ());
-            }
-            if(abs(endY) > 0){
-                // premaknemo po x
-                between_1.setX(collision.getX()+1);
-                between_1.setY(end.getY());
-                between_1.setZ(end.getZ());
-
-                // ustrezno premaknemo vzporedno do naslednje tocke
-                between_2.setX(end.getX());
-                between_2.setY(end.getY());
-                between_2.setZ(end.getZ());
-            }
+            between_2.setX(end.getX());
+            between_2.setY(end.getY());
+            between_2.setZ(end.getZ());
 
             // dodamo v pot
             A.addToPathAtIndex(i+2, A.getCoordinate(i+1));

@@ -96,7 +96,8 @@ void Drone::GenerateEdges() {
 
 bool Drone::ValidEdge(Point p) {
     if(abs(p.getX()-currentPosition.getX())<=1 && abs(p.getY()-currentPosition.getY()) <=1 && abs(p.getZ()-currentPosition.getZ())<=1 ){
-        return true;
+        int sum = abs(p.getX()-currentPosition.getX()) + abs(p.getY()-currentPosition.getY()) + abs(p.getZ()-currentPosition.getZ());
+        return sum<=1;
     }
     else return false;
 }
