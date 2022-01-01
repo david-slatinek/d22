@@ -103,6 +103,7 @@ void bruteforce(Drone A, Drone B){
             int moveY = 0;
             int moveZ = 0;
 
+
             if(abs(beginX) > 0){
                 // premaknemo po y, da se izognemo trku po x
                 between_1.setX(begin.getX());
@@ -150,24 +151,14 @@ void bruteforce(Drone A, Drone B){
             B.addToPathAtIndex(i+1, between_1);
             B.addToPathAtIndex(i+2, between_2);
 
-
             between_1.setX(end.getX()+moveX);
             between_1.setY(end.getY()+moveY);
             between_1.setZ(end.getZ());
 
-            between_2.setX(end.getX());
-            between_2.setY(end.getY());
-            between_2.setZ(end.getZ());
 
             // dodamo v pot
             A.addToPathAtIndex(i+2, A.getCoordinate(i+1));
-            A.addToPathAtIndex(i+2, A.getCoordinate(i+1));
-
             B.addToPathAtIndex(i+3, between_1);
-            B.addToPathAtIndex(i+4, between_2);
-            i+=4;
-
-
 
         }
 
@@ -178,27 +169,17 @@ void bruteforce(Drone A, Drone B){
     }
 
     std::cout << endl << "Rezultat" << endl;
-            cout << "------------------------" << endl;
-            int ia = 0, ib = 0;
-            for (size_t i = 0; i < (int)min(A.getPathSize(), B.getPathSize()); i++)
-            {
-                cout << A.getCoordinate(ia).toString() << " " << B.getCoordinate(ib).toString() << "\n";
+    cout << "------------------------" << endl;
+    int ia = 0, ib = 0;
+    for (size_t i = 0; i < (int)min(A.getPathSize(), B.getPathSize()); i++)
+    {
+        cout << A.getCoordinate(ia).toString() << " " << B.getCoordinate(ib).toString() << "\n";
 
-                if (ia + 1 < A.getPathSize()) ia++;
-                if (ib + 1 < B.getPathSize()) ib++;
-            }
+        if (ia + 1 < A.getPathSize()) ia++;
+        if (ib + 1 < B.getPathSize()) ib++;
+    }
 
 
-    // std::cout << endl << "Rezultat" << endl;
-	// cout << "------------------------" << endl;
-	// int ia = 0, ib = 0;
-	// for (size_t i = 0; i < (int)min(A.getPathSize(), B.getPathSize()); i++)
-	// {
-	// 	cout << A.getCoordinate(ia).toString() << " " << B.getCoordinate(ib).toString() << "\n";
-
-	// 	if (ia + 1 < A.getPathSize()) ia++;
-	// 	if (ib + 1 < B.getPathSize()) ib++;
-	// }
 
 }
 
