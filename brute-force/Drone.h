@@ -9,42 +9,50 @@
 
 using namespace std;
 
-class Drone
-{
+class Drone {
 private:
-    Point startPosition;
-    Point endPosition;
-    Point currentPosition;
-    vector <Point*> allCoordinates;
-    vector <Point> pathToEnd;
+	Point startPosition;
+	Point endPosition;
+	Point currentPosition;
+	vector <Point> allCoordinates;
+	vector <Point> pathToEnd;
+	vector <vector<bool>> edges;
 
-    int index;
-    bool end;
+	int index = -1;
+	bool end;
 public:
-    Drone();
-    Drone(Point startPos, Point endPos, std::vector<Point*> allPos);
-    Drone(Point startPos, Point endPos);
-    //virtual ~Drone();
+	Drone();
+	Drone(Point startPos, Point endPos, std::vector<Point> allPos);
+	Drone(Point startPos, Point endPos);
+	//virtual ~Drone();
 
-    Point getCurrentPosition() const;
-    int getIndex() const;
-    bool isNext() const;
-    bool isEnd() const;
-    Point getNext();
-    Point getPrev();
+	Point getCurrentPosition() const;
+	int getIndex() const;
+	bool isNext() const;
+	bool isEnd() const;
+	Point getNext();
+	Point getPrev();
 
-    void addCoordinate(Point* coordinate);
-    void setCurrentPosition(Point currentPosition);
-    void setIndex(int index);
-    void setEnd(bool end);
-    void addAll(vector<Point*> allPos);
-    bool goBack(Point current);
+	void addCoordinate(Point coordinate);
+	void setCurrentPosition(Point currentPosition);
+	void setIndex(int index);
+	void setEnd(bool end);
+	void addAll(vector<Point> allPos);
+	void addToPathAtIndex(int i, Point p);
+	void backtrack(Point p);
+	void removeCoordinateAt(int i);
 
-    void addToPath(Point p);
-    int getPathSize();
-    Point getCoordinate(int i);
+	void addToPath(Point p);
+	int getPathSize();
+	Point getCoordinate(int i);
 
-    //virtual std::string toString() const;
+
+	void GenerateEdges();
+	bool ValidEdge(Point p);
+
+	bool IsAtEnd();
+
+	virtual std::string toString() const;
 };
 
 #endif
