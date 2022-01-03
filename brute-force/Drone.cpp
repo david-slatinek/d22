@@ -63,10 +63,10 @@ bool Drone::IsAtEnd()
 
 std::string Drone::toString() const
 {
-	string start = "Start: (" + to_string(startPosition.getX()) + " " + to_string(startPosition.getY()) + " " + to_string(startPosition.getZ()) + ")";
-	string end = "End: (" + to_string(endPosition.getX()) + " " + to_string(endPosition.getY()) + " " + to_string(endPosition.getZ()) + ")";
+	string start = "(" + to_string(startPosition.getX()) + " " + to_string(startPosition.getY()) + " " + to_string(startPosition.getZ()) + ")";
+	string end = "(" + to_string(endPosition.getX()) + " " + to_string(endPosition.getY()) + " " + to_string(endPosition.getZ()) + ")";
 
-	return start + "  " + end;
+	return start + " -> " + end;
 }
 
 void Drone::setCurrentPosition(Point position)

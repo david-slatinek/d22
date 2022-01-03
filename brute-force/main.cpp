@@ -4,7 +4,7 @@
 #include <climits>
 #include "Drone.h"
 #include "Point.h"
-#include <sys/resource.h>
+//#include <sys/resource.h>
 
 using namespace std;
 
@@ -86,7 +86,7 @@ void bruteforce(Drone A, Drone B)
 	}
 
 	// preverimo če kje trčita
-	for (size_t i = 0; i < A.getPathSize() - 2; i++)
+	for (size_t i = 0; i < A.getPathSize(); i++)
 	{
 		// če je prišlo do trka, bo B šel okoli te točke
 		if (A.getCoordinate(i + 1) == B.getCoordinate(i + 1))
@@ -177,6 +177,23 @@ void bruteforce(Drone A, Drone B)
 		// preverimo, če je prišlo do izmenjave pozicij
 		if (i > 0 && A.getCoordinate(i - 1) == B.getCoordinate(i) && A.getCoordinate(i) == B.getCoordinate(i - 1))
 		{
+			// trenutno je tole hard-coded za primer (6-parallel.in)
+			// TODO - testiraj še na kakšnem primeru
+			cout << "izmenjava" << endl;
+			Point aPrev = A.getCoordinate(i - 1);
+			Point bPrev = B.getCoordinate(i - 1);
+
+			aPrev.setY(aPrev.getY() - 1);
+
+			A.addToPathAtIndex(i, aPrev);
+			B.addToPathAtIndex(i++, bPrev);
+
+			aPrev.setX(aPrev.getX() - 1);
+			B.setIndex(B.getIndex() - 1);
+			bPrev = B.getNext();
+
+			A.addToPathAtIndex(i, aPrev);
+			B.addToPathAtIndex(i++, bPrev);
 		}
 	}
 
@@ -194,9 +211,9 @@ void bruteforce(Drone A, Drone B)
 			ib++;
 	}
 
-	/*
+	
 	// izpis za prikaz v Blenderju
-	cout << "A:" << endl;
+	/*cout << "A:" << endl;
 	for (size_t i = 0; i < (int)min(A.getPathSize(), B.getPathSize()); i++) {
 		cout << A.getCoordinate(i).toString() << ", ";
 	}
@@ -225,12 +242,14 @@ void writeToFile(Drone A, Drone B)
 	outFile.close();
 }
 
+/*
 void print_memory_usage()
 {
 	struct rusage usage;
 	getrusage(RUSAGE_SELF, &usage);
 	cout << "USE: " << usage.ru_maxrss << " KB" << endl;
 }
+*/
 
 int main(int argc, char *argv[])
 {
@@ -344,12 +363,12 @@ int main(int argc, char *argv[])
 	Drone droneA(Point(start_a), Point(end_a), pointsA);
 	Drone droneB(Point(start_b), Point(end_b), pointsB);
 
-	cout << droneA.toString() << endl;
-	cout << droneB.toString() << endl;
+	cout << "Drone A:  " << droneA.toString() << endl;
+	cout << "Drone B:  " << droneB.toString() << endl;
 
 	bruteforce(droneA, droneB);
 
-	// print_memory_usage();
+	//print_memory_usage();
 
 	writeToFile(droneA, droneB);
 
