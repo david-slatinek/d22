@@ -4,6 +4,7 @@
 #include <climits>
 #include "Drone.h"
 #include "Point.h"
+#include <sys/resource.h>
 
 using namespace std;
 
@@ -224,6 +225,13 @@ void writeToFile(Drone A, Drone B)
 	outFile.close();
 }
 
+void print_memory_usage()
+{
+	struct rusage usage;
+	getrusage(RUSAGE_SELF, &usage);
+	cout << "USE: " << usage.ru_maxrss << " KB" << endl;
+}
+
 int main(int argc, char *argv[])
 {
 	if (argc == 1)
@@ -340,6 +348,8 @@ int main(int argc, char *argv[])
 	cout << droneB.toString() << endl;
 
 	bruteforce(droneA, droneB);
+
+	// print_memory_usage();
 
 	writeToFile(droneA, droneB);
 
