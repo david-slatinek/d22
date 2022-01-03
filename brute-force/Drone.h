@@ -9,17 +9,19 @@
 
 using namespace std;
 
-class Drone {
+class Drone
+{
 private:
 	Point startPosition;
 	Point endPosition;
 	Point currentPosition;
-	vector <Point> allCoordinates;
-	vector <Point> pathToEnd;
-	vector <vector<bool>> edges;
+	vector<Point> allCoordinates;
+	vector<Point> pathToEnd;
+	vector<vector<bool>> edges;
 
 	int index = -1;
 	bool end;
+
 public:
 	Drone();
 	Drone(Point startPos, Point endPos, std::vector<Point> allPos);
@@ -45,7 +47,6 @@ public:
 	void addToPath(Point p);
 	int getPathSize();
 	Point getCoordinate(int i);
-
 
 	void GenerateEdges();
 	bool ValidEdge(Point p);

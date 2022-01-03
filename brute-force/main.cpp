@@ -4,11 +4,11 @@
 #include <climits>
 #include "Drone.h"
 #include "Point.h"
-#include "main.h"
 
 using namespace std;
 
-void generateCoordinates(int start, const int end, vector<int>& a) {
+void generateCoordinates(int start, const int end, vector<int> &a)
+{
 	int counter = 0;
 	while (start != end)
 	{
@@ -21,7 +21,8 @@ void generateCoordinates(int start, const int end, vector<int>& a) {
 	a.at(counter) = start;
 }
 
-bool pathOK(Point a, Point b) {
+bool pathOK(Point a, Point b)
+{
 	// vsaj ena izmed koordinat mora biti različna
 	if (a.getX() != b.getX())
 		return true;
@@ -32,12 +33,13 @@ bool pathOK(Point a, Point b) {
 	return false;
 }
 
-bool pointsOK(Point a, Point b, Point prevA, Point prevB) {
+bool pointsOK(Point a, Point b, Point prevA, Point prevB)
+{
 	return (abs(prevA.getX() - a.getX()) <= 1 && abs(prevA.getY() - a.getY()) <= 1 && abs(prevA.getZ() - a.getZ()) <= 1 && abs(prevB.getX() - b.getX()) <= 1 && abs(prevB.getY() - b.getY()) <= 1 && abs(prevB.getZ() - b.getZ()) <= 1);
 }
 
-
-void bruteforce(Drone& A, Drone& B) {
+void bruteforce(Drone A, Drone B)
+{
 	// za vsak dron zgeneriramo popolno pot, potem pa se izognemo trčenjem
 	A.GenerateEdges();
 	B.GenerateEdges();
@@ -49,41 +51,52 @@ void bruteforce(Drone& A, Drone& B) {
 	A.addToPath(a);
 	B.addToPath(b);
 
-	while (true) {
-		if (A.isNext()) {
+	while (true)
+	{
+		if (A.isNext())
+		{
 			a = A.getNext();
 		}
-		else {
+		else
+		{
 			A.setEnd(true);
 		}
-		if (B.isNext()) {
+		if (B.isNext())
+		{
 			b = B.getNext();
 		}
-		else {
+		else
+		{
 			B.setEnd(true);
 		}
-		if (A.isEnd() && B.isEnd()) {
+		if (A.isEnd() && B.isEnd())
+		{
 			break;
 		}
-		if (A.ValidEdge(a)) {
+		if (A.ValidEdge(a))
+		{
 			A.addToPath(a);
 		}
 
-		if (B.ValidEdge(b)) {
+		if (B.ValidEdge(b))
+		{
 			B.addToPath(b);
 		}
 	}
 
 	// preverimo če kje trčita
-	for (size_t i = 0; i < A.getPathSize() - 2; i++) {
+	for (size_t i = 0; i < A.getPathSize() - 2; i++)
+	{
 		// če je prišlo do trka, bo B šel okoli te točke
-		if (A.getCoordinate(i + 1) == B.getCoordinate(i + 1)) {
+		if (A.getCoordinate(i + 1) == B.getCoordinate(i + 1))
+		{
 			// shranimo točko pred točko in točko trka
 			Point begin = B.getCoordinate(i);
 			Point collision = B.getCoordinate(i + 1);
 			Point end = B.getCoordinate(i + 2);
 
-			if (collision == Point() || end == Point()) break;
+			if (collision == Point() || end == Point())
+				break;
 
 			Point between_1(0, 0, 0);
 			Point between_2(0, 0, 0);
@@ -93,16 +106,16 @@ void bruteforce(Drone& A, Drone& B) {
 			int beginY = collision.getY() - begin.getY();
 			int beginZ = collision.getZ() - begin.getZ();
 
-			int endX = end.getX() - collision.getX();
-			int endY = end.getY() - collision.getY();
-			int endZ = end.getZ() - collision.getZ();
+			// int endX = end.getX() - collision.getX();
+			// int endY = end.getY() - collision.getY();
+			// int endZ = end.getZ() - collision.getZ();
 
 			int moveX = 0;
 			int moveY = 0;
-			int moveZ = 0;
+			// int moveZ = 0;
 
-
-			if (abs(beginX) > 0) {
+			if (abs(beginX) > 0)
+			{
 				// premaknemo po y, da se izognemo trku po x
 				between_1.setX(begin.getX());
 				between_1.setY(begin.getY() + 1);
@@ -115,7 +128,8 @@ void bruteforce(Drone& A, Drone& B) {
 
 				moveY = 1;
 			}
-			if (abs(beginY) > 0) {
+			if (abs(beginY) > 0)
+			{
 				// premaknemo po x
 				between_1.setX(begin.getX() + 1);
 				between_1.setY(begin.getY());
@@ -128,7 +142,8 @@ void bruteforce(Drone& A, Drone& B) {
 
 				moveX = 1;
 			}
-			if (abs(beginZ) > 0) {
+			if (abs(beginZ) > 0)
+			{
 				// premaknemo po x
 				between_1.setX(begin.getX() + 1);
 				between_1.setY(begin.getY());
@@ -153,26 +168,29 @@ void bruteforce(Drone& A, Drone& B) {
 			between_1.setY(end.getY() + moveY);
 			between_1.setZ(end.getZ());
 
-
 			// dodamo v pot
 			A.addToPathAtIndex(i + 2, A.getCoordinate(i + 1));
 			B.addToPathAtIndex(i + 3, between_1);
 		}
 
 		// preverimo, če je prišlo do izmenjave pozicij
-		if (i > 0 && A.getCoordinate(i - 1) == B.getCoordinate(i) && A.getCoordinate(i) == B.getCoordinate(i - 1)) {
-
+		if (i > 0 && A.getCoordinate(i - 1) == B.getCoordinate(i) && A.getCoordinate(i) == B.getCoordinate(i - 1))
+		{
 		}
 	}
 
-	std::cout << endl << "Rezultat" << endl;
+	std::cout << endl
+			  << "Rezultat" << endl;
 	cout << "------------------------" << endl;
 	int ia = 0, ib = 0;
-	for (int i = 0; i < (int)min(A.getPathSize(), B.getPathSize()); i++) {
+	for (int i = 0; i < (int)min(A.getPathSize(), B.getPathSize()); i++)
+	{
 		cout << A.getCoordinate(ia).toString() << " " << B.getCoordinate(ib).toString() << "\n";
 
-		if (ia + 1 < A.getPathSize()) ia++;
-		if (ib + 1 < B.getPathSize()) ib++;
+		if (ia + 1 < A.getPathSize())
+			ia++;
+		if (ib + 1 < B.getPathSize())
+			ib++;
 	}
 
 	/*
@@ -188,30 +206,35 @@ void bruteforce(Drone& A, Drone& B) {
 	}*/
 }
 
-
-void writeToFile(Drone A, Drone B) {
+void writeToFile(Drone A, Drone B)
+{
 	ofstream outFile("result.out");
 
 	int ia = 0, ib = 0;
-	for (int i = 0; i < (int)min(A.getPathSize(), B.getPathSize()); i++) {
+	for (int i = 0; i < (int)min(A.getPathSize(), B.getPathSize()); i++)
+	{
 		outFile << A.getCoordinate(ia).toString() << " " << B.getCoordinate(ib).toString() << endl;
 
-		if (ia + 1 < A.getPathSize()) ia++;
-		if (ib + 1 < B.getPathSize()) ib++;
+		if (ia + 1 < A.getPathSize())
+			ia++;
+		if (ib + 1 < B.getPathSize())
+			ib++;
 	}
 
 	outFile.close();
 }
 
-int main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {
-	if (argc == 1) {
+	if (argc == 1)
+	{
 		cout << "Uporaba: ./main [datoteka]" << endl;
 		exit(1);
 	}
 
 	ifstream file(argv[1], ios::in);
-	if (!file.is_open()) {
+	if (!file.is_open())
+	{
 		cerr << "Napaka: datoteke ni bilo mogoče odpreti." << endl;
 		exit(1);
 	}
@@ -257,9 +280,12 @@ int main(int argc, char* argv[])
 		pointsA.push_back(Point());
 
 	int i = 0;
-	for (int x = 0; x < cSizeX; x++) {
-		for (int y = 0; y < cSizeY; y++) {
-			for (int z = 0; z < cSizeZ; z++) {
+	for (int x = 0; x < cSizeX; x++)
+	{
+		for (int y = 0; y < cSizeY; y++)
+		{
+			for (int z = 0; z < cSizeZ; z++)
+			{
 				pointsA[i].setX(coordinatesXA[x]);
 				pointsA[i].setY(coordinatesYA[y]);
 				pointsA[i++].setZ(coordinatesZA[z]);
@@ -294,9 +320,12 @@ int main(int argc, char* argv[])
 		pointsB.push_back(Point());
 
 	i = 0;
-	for (int x = 0; x < cSizeX; x++) {
-		for (int y = 0; y < cSizeY; y++) {
-			for (int z = 0; z < cSizeZ; z++) {
+	for (int x = 0; x < cSizeX; x++)
+	{
+		for (int y = 0; y < cSizeY; y++)
+		{
+			for (int z = 0; z < cSizeZ; z++)
+			{
 				pointsB[i].setX(coordinatesXB[x]);
 				pointsB[i].setY(coordinatesYB[y]);
 				pointsB[i++].setZ(coordinatesZB[z]);
