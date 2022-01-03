@@ -4,3 +4,7 @@ brute-force/main.o
 brute-force/Point.o
 brute-force/Drone.o
 brute-force/main.exe
+algorithm/main.o
+algorithm/Point.o
+algorithm/Drone.o
+algorithm/main.exe
