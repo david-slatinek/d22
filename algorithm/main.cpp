@@ -2,10 +2,13 @@
 #include <fstream>
 #include <vector>
 #include <climits>
+#include <cmath>
 #include "Drone.h"
 #include "Point.h"
 
 using namespace std;
+
+int _x = 0, _y = 0, _z = 0;
 
 int GetValue(int start, int end) {
 	int value = start;
@@ -17,10 +20,14 @@ int GetValue(int start, int end) {
 }
 
 Point GetVertex(Point start, Point end) {
-	for (int x = 0; x < GetValue(start.getX(), end.getX()); x++) {
-		for (int y = 0; y < GetValue(start.getY(), end.getY()); y++) {
-			for (int z = 0; z < GetValue(start.getZ(), end.getZ()); z++) {
+	for (int x = _x; x < GetValue(start.getX(), end.getX()); x++) {
+		for (int y = _y; y < GetValue(start.getY(), end.getY()); y++) {
+			for (int z = _z; z < GetValue(start.getZ(), end.getZ()); z++) {
 				// yield CreateVertex();
+				_x = x;
+				_y = y;
+				_z = z;
+				return Point(x, y, z);
 			}
 		}
 	}
@@ -56,11 +63,64 @@ void D22(Drone& A, Drone& B) {
 	B.addToPath(B.getStartPosition());
 
 	Point a, b;
+	bool restA, restB;
 	while (!A.IsAtEnd() && !B.IsAtEnd()) {
 		a = GetVertex(A.getStartPosition(), A.getEndPosition());
 		b = GetVertex(B.getStartPosition(), B.getEndPosition());
 
-		// TODO 
+		// TODO
+
+		if(!A.isEnd()){
+			a = GetVertex(A.getStartPosition(), A.getEndPosition());
+		}
+		if(!B.isEnd()){
+			b = GetVertex(B.getStartPosition(), B.getEndPosition());
+		}
+
+		if(restA && !restB){
+			if(Valid(b, B.getCurrentPosition()) && Feasible(a, b)){
+				B.addToPath(b);
+			}
+			else{
+				B.backtrack(b);
+			}
+		}
+		else if(!restA && restB){
+			if(Valid(a, A.getCurrentPosition()) && Feasible(a, b)){
+				A.addToPath(a);
+			}
+			else{
+				A.backtrack(a);
+			}
+		}
+		else{
+			if(Feasible(a, b)){
+				if(Valid(b, B.getCurrentPosition())){
+					B.addToPath(b);
+
+				}
+				else{
+					B.backtrack(b);
+				}
+
+			}
+			else{
+				if(Valid(a, A.getCurrentPosition()))
+				{
+					A.addToPath(a);
+				}
+				else{
+					A.backtrack(a);
+				}
+
+				if(Valid(b, B.getCurrentPosition())){
+					B.addToPath(b);
+				}
+				else{
+					B.backtrack(b);
+				}
+			}
+		}
 	}
 
 
