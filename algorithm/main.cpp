@@ -49,7 +49,11 @@ bool Feasible(Point a, Point b) {
 }
 
 bool Valid(Point a, Point b) {
-	return sqrt(pow(b.getX() - a.getX(), 2) + pow(b.getY() - a.getY(), 2) + pow(b.getZ() - a.getZ(), 2)) == 1;
+	int lenX = abs(a.getX() - b.getX());
+	int lenY = abs(a.getY() - b.getY());
+	int lenZ = abs(a.getZ() - b.getZ());
+
+	return (lenX == 1 || lenX == 0) && (lenY == 1 ||lenY == 0) && (lenZ == 1 ||lenZ == 0);
 }
 
 bool pointsOK(Point a, Point b, Point prevA, Point prevB) {
@@ -57,51 +61,26 @@ bool pointsOK(Point a, Point b, Point prevA, Point prevB) {
 }
 
 void D22(Drone& A, Drone& B) {
-	/*for (int x = A.getStartPosition().getX(); abs(x) <= abs(x) + abs(x - A.getEndPosition().getX()); x++)
-	{
-		for (int y = A.getStartPosition().getY(); abs(y) <= abs(y) + abs(y - A.getEndPosition().getY()); y++)
-		{
-			for (int z = A.getStartPosition().getZ(); abs(z) <= abs(z) + abs(z - A.getEndPosition().getZ()); z++)
-			{
-				A.addToPath(Point(x, y, z));
-			}
-		}
-	}
-
-	for (int x = B.getStartPosition().getX(); abs(x) <= abs(x) + abs(x - B.getEndPosition().getX()); x++)
-	{
-		for (int y = B.getStartPosition().getY(); abs(y) <= abs(y) + abs(y - B.getEndPosition().getY()); y++)
-		{
-			for (int z = B.getStartPosition().getZ(); abs(z) <= abs(z) + abs(z - B.getEndPosition().getZ()); z++)
-			{
-				B.addToPath(Point(x, y, z));
-			}
-		}
-	}*/
-
 	int max_a_X = abs(A.getStartPosition().getX() - A.getEndPosition().getX());
 	int max_a_Y = abs(A.getStartPosition().getY() - A.getEndPosition().getY());
 	int max_a_Z = abs(A.getStartPosition().getZ() - A.getEndPosition().getZ());
-	
 	int max_b_X = abs(B.getStartPosition().getX() - B.getEndPosition().getX());
 	int max_b_Y = abs(B.getStartPosition().getY() - B.getEndPosition().getY());
 	int max_b_Z = abs(B.getStartPosition().getZ() - B.getEndPosition().getZ());
 
-
 	int a_toward_X = (A.getStartPosition().getX() <= A.getEndPosition().getX() ? 1 : -1);
 	int a_toward_Y = (A.getStartPosition().getY() <= A.getEndPosition().getY() ? 1 : -1);
 	int a_toward_Z = (A.getStartPosition().getZ() <= A.getEndPosition().getZ() ? 1 : -1);
-
 	int b_toward_X = (B.getStartPosition().getX() <= B.getEndPosition().getX() ? 1 : -1);
 	int b_toward_Y = (B.getStartPosition().getY() <= B.getEndPosition().getY() ? 1 : -1);
 	int b_toward_Z = (B.getStartPosition().getZ() <= B.getEndPosition().getZ() ? 1 : -1);
 
 	A.addToPath(A.getStartPosition());
-	for (int x = 1; x <= max_a_X; x++)
+	for (int x = 0; x <= max_a_X; x++)
 	{
-		for (int y = 1; y <= max_a_Y; y++)
+		for (int y = 0; y <= max_a_Y; y++)
 		{
-			for (int z = 1; z <= max_a_Z; z++)
+			for (int z = 0; z <= max_a_Z; z++)
 			{
 				Point new_coord(A.getStartPosition().getX() + x * a_toward_X, A.getStartPosition().getY() + y * a_toward_Y, A.getStartPosition().getZ() + z * a_toward_Z);
 				if (Valid(A.getCoordinate(A.getPathSize() - 1), new_coord))
@@ -113,13 +92,17 @@ void D22(Drone& A, Drone& B) {
 	}
 
 	B.addToPath(B.getStartPosition());
-	for (int x = 1; x <= max_b_X; x++)
+	for (int x = 0; x <= max_b_X; x++)
 	{
-		for (int y = 1; y <= max_b_Y; y++)
+		for (int y = 0; y <= max_b_Y; y++)
 		{
-			for (int z = 1; z <= max_b_Z; z++)
+			for (int z = 0; z <= max_b_Z; z++)
 			{
-				B.addToPath(Point(B.getStartPosition().getX() + x * b_toward_X, B.getStartPosition().getY() + y * b_toward_Y, B.getStartPosition().getZ() + z * b_toward_Z));
+				Point new_coord(B.getStartPosition().getX() + x * b_toward_X, B.getStartPosition().getY() + y * b_toward_Y, B.getStartPosition().getZ() + z * b_toward_Z);
+				if (Valid(B.getCoordinate(B.getPathSize() - 1), new_coord))
+				{
+					B.addToPath(new_coord);
+				}
 			}
 		}
 	}
