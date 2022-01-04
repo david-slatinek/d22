@@ -53,7 +53,7 @@ bool Valid(Point a, Point b) {
 	int lenY = abs(a.getY() - b.getY());
 	int lenZ = abs(a.getZ() - b.getZ());
 
-	return (lenX == 1 || lenX == 0) && (lenY == 1 ||lenY == 0) && (lenZ == 1 ||lenZ == 0);
+	return lenX <= 1 && lenY <= 1 && lenZ <= 1 && (lenX + lenY + lenZ <= 1);
 }
 
 bool pointsOK(Point a, Point b, Point prevA, Point prevB) {
@@ -75,7 +75,7 @@ void D22(Drone& A, Drone& B) {
 	int b_toward_Y = (B.getStartPosition().getY() <= B.getEndPosition().getY() ? 1 : -1);
 	int b_toward_Z = (B.getStartPosition().getZ() <= B.getEndPosition().getZ() ? 1 : -1);
 
-int x_to = 0, y_to = 0, z_to = 0;
+	int x_to = 0, y_to = 0, z_to = 0;
 	A.addToPath(A.getStartPosition());
 	for (int x = 0; x <= max_a_X; x++)
 	{
@@ -83,19 +83,13 @@ int x_to = 0, y_to = 0, z_to = 0;
 		{
 			for (int z = 0; z <= max_a_Z; z++)
 			{
-				Point new_coord(A.getStartPosition().getX() + x_to * a_toward_X, A.getStartPosition().getY() + y_to * a_toward_Y, A.getStartPosition().getZ() + z_to * a_toward_Z);
+				Point new_coord(A.getStartPosition().getX() + x * a_toward_X, A.getStartPosition().getY() + y * a_toward_Y, A.getStartPosition().getZ() + z * a_toward_Z);
 				if (Valid(A.getCoordinate(A.getPathSize() - 1), new_coord))
 				{
 					A.addToPath(new_coord);
 				}
-				if (z_to != A.getEndPosition().getZ()) z_to++;
-				else if (z_to == A.getEndPosition().getZ()) break;
 			}
-			if (y_to != A.getEndPosition().getY()) y_to++;
-			else if (y_to == A.getEndPosition().getY()) break;
 		}
-		if (x_to != A.getEndPosition().getX()) x_to++;
-		else if (x_to == A.getEndPosition().getX()) break;
 	}
 
 	x_to = 0, y_to = 0, z_to = 0;
@@ -106,19 +100,13 @@ int x_to = 0, y_to = 0, z_to = 0;
 		{
 			for (int z = 0; z <= max_b_Z; z++)
 			{
-				Point new_coord(B.getStartPosition().getX() + x_to * b_toward_X, B.getStartPosition().getY() + y_to * b_toward_Y, B.getStartPosition().getZ() + z_to * b_toward_Z);
+				Point new_coord(B.getStartPosition().getX() + x * b_toward_X, B.getStartPosition().getY() + y * b_toward_Y, B.getStartPosition().getZ() + z * b_toward_Z);
 				if (Valid(B.getCoordinate(B.getPathSize() - 1), new_coord))
 				{
 					B.addToPath(new_coord);
 				}
-				if (z_to != B.getEndPosition().getZ()) z_to++;
-				else if (z_to == B.getEndPosition().getZ()) break;
 			}
-			if (y_to != B.getEndPosition().getY()) y_to;
-			else if (y_to == B.getEndPosition().getY()) break;
 		}
-		if (x_to != B.getEndPosition().getX()) x_to++;
-		else if (x_to == B.getEndPosition().getX()) break;
 	}
 
 	std::cout << endl << "Rezultat" << endl;
