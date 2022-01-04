@@ -75,6 +75,7 @@ void D22(Drone& A, Drone& B) {
 	int b_toward_Y = (B.getStartPosition().getY() <= B.getEndPosition().getY() ? 1 : -1);
 	int b_toward_Z = (B.getStartPosition().getZ() <= B.getEndPosition().getZ() ? 1 : -1);
 
+int x_to = 0, y_to = 0, z_to = 0;
 	A.addToPath(A.getStartPosition());
 	for (int x = 0; x <= max_a_X; x++)
 	{
@@ -82,15 +83,22 @@ void D22(Drone& A, Drone& B) {
 		{
 			for (int z = 0; z <= max_a_Z; z++)
 			{
-				Point new_coord(A.getStartPosition().getX() + x * a_toward_X, A.getStartPosition().getY() + y * a_toward_Y, A.getStartPosition().getZ() + z * a_toward_Z);
+				Point new_coord(A.getStartPosition().getX() + x_to * a_toward_X, A.getStartPosition().getY() + y_to * a_toward_Y, A.getStartPosition().getZ() + z_to * a_toward_Z);
 				if (Valid(A.getCoordinate(A.getPathSize() - 1), new_coord))
 				{
 					A.addToPath(new_coord);
 				}
+				if (z_to != A.getEndPosition().getZ()) z_to++;
+				else if (z_to == A.getEndPosition().getZ()) break;
 			}
+			if (y_to != A.getEndPosition().getY()) y_to++;
+			else if (y_to == A.getEndPosition().getY()) break;
 		}
+		if (x_to != A.getEndPosition().getX()) x_to++;
+		else if (x_to == A.getEndPosition().getX()) break;
 	}
 
+	x_to = 0, y_to = 0, z_to = 0;
 	B.addToPath(B.getStartPosition());
 	for (int x = 0; x <= max_b_X; x++)
 	{
@@ -98,36 +106,42 @@ void D22(Drone& A, Drone& B) {
 		{
 			for (int z = 0; z <= max_b_Z; z++)
 			{
-				Point new_coord(B.getStartPosition().getX() + x * b_toward_X, B.getStartPosition().getY() + y * b_toward_Y, B.getStartPosition().getZ() + z * b_toward_Z);
+				Point new_coord(B.getStartPosition().getX() + x_to * b_toward_X, B.getStartPosition().getY() + y_to * b_toward_Y, B.getStartPosition().getZ() + z_to * b_toward_Z);
 				if (Valid(B.getCoordinate(B.getPathSize() - 1), new_coord))
 				{
 					B.addToPath(new_coord);
 				}
+				if (z_to != B.getEndPosition().getZ()) z_to++;
+				else if (z_to == B.getEndPosition().getZ()) break;
 			}
+			if (y_to != B.getEndPosition().getY()) y_to;
+			else if (y_to == B.getEndPosition().getY()) break;
 		}
+		if (x_to != B.getEndPosition().getX()) x_to++;
+		else if (x_to == B.getEndPosition().getX()) break;
 	}
 
 	std::cout << endl << "Rezultat" << endl;
 	cout << "------------------------" << endl;
-	int ia = 0, ib = 0;
+	/*int ia = 0, ib = 0;
 	for (int i = 0; i < (int)max(A.getPathSize(), B.getPathSize()); i++) {
 		cout << A.getCoordinate(ia).toString() << " " << B.getCoordinate(ib).toString() << "\n";
 
 		if (ia + 1 < A.getPathSize()) ia++;
 		if (ib + 1 < B.getPathSize()) ib++;
-	}
+	}*/
 
 
 	// izpis za prikaz v Blenderju
-	/*cout << "A:" << endl;
-	for (size_t i = 0; i < (int)min(A.getPathSize(), B.getPathSize()); i++) {
+	cout << "A:" << endl;
+	for (size_t i = 0; i < A.getPathSize(); i++) {
 		cout << A.getCoordinate(i).toString() << ", ";
 	}
 
 	cout << "\nB:" << endl;
-	for (size_t i = 0; i < (int)min(A.getPathSize(), B.getPathSize()); i++) {
+	for (size_t i = 0; i < B.getPathSize(); i++) {
 		cout << B.getCoordinate(i).toString() << ", ";
-	}*/
+	}
 }
 
 

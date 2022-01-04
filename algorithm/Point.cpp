@@ -24,8 +24,8 @@ void Point::setY(int y) { this->y = y; }
 void Point::setZ(int z) { this->z = z; }
 
 string Point::toString() const {
-	//return "[" + to_string(x) + ", " + to_string(y) + ", " + to_string(z) + "]";  // za Blender test
-	return "(" + to_string(x) + " " + to_string(y) + " " + to_string(z) + ")";
+	return "[" + to_string(x) + ", " + to_string(y) + ", " + to_string(z) + "]";  // za Blender test
+	//return "(" + to_string(x) + " " + to_string(y) + " " + to_string(z) + ")";
 }
 
 bool operator==(Point p1, Point p2) {
