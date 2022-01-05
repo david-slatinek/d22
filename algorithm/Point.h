@@ -5,7 +5,8 @@
 
 using namespace std;
 
-class Point {
+class Point
+{
 private:
 	int x, y, z;
 
@@ -23,7 +24,7 @@ public:
 	void setY(int y);
 	void setZ(int z);
 
-	friend bool operator== (Point p1, Point p2);
+	friend bool operator==(Point p1, Point p2);
 
 	virtual string toString() const;
 };

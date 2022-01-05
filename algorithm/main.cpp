@@ -5,26 +5,34 @@
 #include <cmath>
 #include "Drone.h"
 #include "Point.h"
+//#include <sys/resource.h>
 
 using namespace std;
 
 int _x = 0, _y = 0, _z = 0;
-Point* curentA;
-Point* curentB;
+Point *curentA;
+Point *curentB;
 
-int GetValue(int start, int end) {
-	if (start < end) start = start + 1;
-	else start = start - 1;
+int GetValue(int start, int end)
+{
+	if (start < end)
+		start = start + 1;
+	else
+		start = start - 1;
 
 	int value = start;
 	// yield value
 	return value;
 }
 
-Point GetVertex(Point start, Point end, Point current) {
-	for (int x = current.getX(); x < GetValue(start.getX(), end.getX()); x++) {
-		for (int y = current.getY(); y < GetValue(start.getY(), end.getY()); y++) {
-			for (int z = current.getZ(); z < GetValue(start.getZ(), end.getZ()); z++) {
+Point GetVertex(Point start, Point end, Point current)
+{
+	for (int x = current.getX(); x < GetValue(start.getX(), end.getX()); x++)
+	{
+		for (int y = current.getY(); y < GetValue(start.getY(), end.getY()); y++)
+		{
+			for (int z = current.getZ(); z < GetValue(start.getZ(), end.getZ()); z++)
+			{
 				// yield CreateVertex();
 				current.setX(x);
 				current.setY(y);
@@ -37,7 +45,8 @@ Point GetVertex(Point start, Point end, Point current) {
 	return Point();
 }
 
-bool Feasible(Point a, Point b) {
+bool Feasible(Point a, Point b)
+{
 	// vsaj ena izmed koordinat mora biti različna
 	if (a.getX() != b.getX())
 		return true;
@@ -48,7 +57,8 @@ bool Feasible(Point a, Point b) {
 	return false;
 }
 
-bool Valid(Point a, Point b) {
+bool Valid(Point a, Point b)
+{
 	int lenX = abs(a.getX() - b.getX());
 	int lenY = abs(a.getY() - b.getY());
 	int lenZ = abs(a.getZ() - b.getZ());
@@ -56,11 +66,13 @@ bool Valid(Point a, Point b) {
 	return lenX <= 1 && lenY <= 1 && lenZ <= 1 && (lenX + lenY + lenZ <= 1);
 }
 
-bool pointsOK(Point a, Point b, Point prevA, Point prevB) {
+bool pointsOK(Point a, Point b, Point prevA, Point prevB)
+{
 	return (abs(prevA.getX() - a.getX()) <= 1 && abs(prevA.getY() - a.getY()) <= 1 && abs(prevA.getZ() - a.getZ()) <= 1 && abs(prevB.getX() - b.getX()) <= 1 && abs(prevB.getY() - b.getY()) <= 1 && abs(prevB.getZ() - b.getZ()) <= 1);
 }
 
-void D22(Drone& A, Drone& B) {
+void D22(Drone &A, Drone &B)
+{
 	int max_a_X = abs(A.getStartPosition().getX() - A.getEndPosition().getX());
 	int max_a_Y = abs(A.getStartPosition().getY() - A.getEndPosition().getY());
 	int max_a_Z = abs(A.getStartPosition().getZ() - A.getEndPosition().getZ());
@@ -75,7 +87,6 @@ void D22(Drone& A, Drone& B) {
 	int b_toward_Y = (B.getStartPosition().getY() <= B.getEndPosition().getY() ? 1 : -1);
 	int b_toward_Z = (B.getStartPosition().getZ() <= B.getEndPosition().getZ() ? 1 : -1);
 
-	int x_to = 0, y_to = 0, z_to = 0;
 	A.addToPath(A.getStartPosition());
 	for (int x = 0; x <= max_a_X; x++)
 	{
@@ -93,7 +104,6 @@ void D22(Drone& A, Drone& B) {
 	}
 	A.removeCoordinateAt(0); // odstrani duplikacijo 1. koordinate
 
-	x_to = 0, y_to = 0, z_to = 0;
 	B.addToPath(B.getStartPosition());
 	for (int x = 0; x <= max_b_X; x++)
 	{
@@ -112,32 +122,35 @@ void D22(Drone& A, Drone& B) {
 	B.removeCoordinateAt(0); // odstrani duplikacijo 1. koordinate
 
 	// izenačimo dolžino poti
-	while(A.getPathSize() < B.getPathSize()){
+	while (A.getPathSize() < B.getPathSize())
+	{
 		A.addToPath(A.getEndPosition());
 	}
 
-	while(B.getPathSize() < A.getPathSize()){
+	while (B.getPathSize() < A.getPathSize())
+	{
 		B.addToPath(B.getEndPosition());
 	}
 
-
 	// preverimo če kje trčita
-	for (size_t i = 0; i < A.getPathSize()-2; i++)
+	for (size_t i = 0; i < A.getPathSize() - 2; i++)
 	{
 		// če je prišlo do trka, bo B šel okoli te točke
-		//cout<<A.getCoordinate(i+1).toString()<< "in "<< B.getCoordinate(i+1).toString()<<endl;
+		// cout<<A.getCoordinate(i+1).toString()<< "in "<< B.getCoordinate(i+1).toString()<<endl;
 		if (A.getCoordinate(i + 1) == B.getCoordinate(i + 1))
 		{
-			cout<<"Trk"<<endl;
+			cout << "Trk" << endl;
 			// shranimo točko pred točko in točko trka
 
 			Drone *droneToMove;
 			Drone *stillDrone;
-			if(B.getCoordinate(i) == B.getCoordinate(i+1) && B.getCoordinate(i+1) == B.getCoordinate(i+1)){
+			if (B.getCoordinate(i) == B.getCoordinate(i + 1) && B.getCoordinate(i + 1) == B.getCoordinate(i + 1))
+			{
 				droneToMove = &A;
 				stillDrone = &B;
 			}
-			else{
+			else
+			{
 
 				droneToMove = &B;
 				stillDrone = &A;
@@ -145,7 +158,7 @@ void D22(Drone& A, Drone& B) {
 			Point begin = droneToMove->getCoordinate(i);
 			Point collision = droneToMove->getCoordinate(i + 1);
 			Point end = droneToMove->getCoordinate(i + 2);
-			cout<<begin.toString()<< ", "<< collision.toString()<<" in "<< end.toString()<<endl;
+			cout << begin.toString() << ", " << collision.toString() << " in " << end.toString() << endl;
 
 			// if (collision == Point() || end == Point())
 			// 	break;
@@ -176,6 +189,7 @@ void D22(Drone& A, Drone& B) {
 
 				moveY = 1;
 			}
+
 			if (abs(beginY) > 0)
 			{
 				// premaknemo po x
@@ -190,6 +204,7 @@ void D22(Drone& A, Drone& B) {
 
 				moveX = 1;
 			}
+
 			if (abs(beginZ) > 0)
 			{
 				// premaknemo po x
@@ -244,54 +259,70 @@ void D22(Drone& A, Drone& B) {
 		}
 	}
 
-
-	std::cout << endl << "Rezultat" << endl;
+	std::cout << endl
+			  << "Rezultat" << endl;
 	cout << "------------------------" << endl;
 	int ia = 0, ib = 0;
-	for (int i = 0; i < (int)max(A.getPathSize(), B.getPathSize()); i++) {
+	for (int i = 0; i < (int)max(A.getPathSize(), B.getPathSize()); i++)
+	{
 		cout << A.getCoordinate(ia).toString() << " " << B.getCoordinate(ib).toString() << "\n";
 
-		if (ia + 1 < A.getPathSize()) ia++;
-		if (ib + 1 < B.getPathSize()) ib++;
+		if (ia + 1 < A.getPathSize())
+			ia++;
+		if (ib + 1 < B.getPathSize())
+			ib++;
 	}
 
+	// izpis za prikaz v Blenderju
+	/*cout << "A:" << endl;
+	for (size_t i = 0; i < A.getPathSize(); i++) {
+	   cout << A.getCoordinate(i).toString() << ", ";
+	}
 
-	 //izpis za prikaz v Blenderju
-	 /*cout << "A:" << endl;
-	 for (size_t i = 0; i < A.getPathSize(); i++) {
-	 	cout << A.getCoordinate(i).toString() << ", ";
-	 }
-
-	 cout << "\nB:" << endl;
-	 for (size_t i = 0; i < B.getPathSize(); i++) {
-	 	cout << B.getCoordinate(i).toString() << ", ";
-	 }*/
+	cout << "\nB:" << endl;
+	for (size_t i = 0; i < B.getPathSize(); i++) {
+	   cout << B.getCoordinate(i).toString() << ", ";
+	}*/
 }
 
+/*
+void print_memory_usage()
+{
+	struct rusage usage;
+	getrusage(RUSAGE_SELF, &usage);
+	cout << "USE: " << usage.ru_maxrss / 1024.0f << " MB" << endl;
+}
+*/
 
-void writeToFile(Drone A, Drone B) {
+void writeToFile(Drone A, Drone B)
+{
 	ofstream outFile("result.out");
 
 	int ia = 0, ib = 0;
-	for (int i = 0; i < (int)max(A.getPathSize(), B.getPathSize()); i++) {
+	for (int i = 0; i < (int)max(A.getPathSize(), B.getPathSize()); i++)
+	{
 		outFile << A.getCoordinate(ia).toString() << " " << B.getCoordinate(ib).toString() << endl;
 
-		if (ia + 1 < A.getPathSize()) ia++;
-		if (ib + 1 < B.getPathSize()) ib++;
+		if (ia + 1 < A.getPathSize())
+			ia++;
+		if (ib + 1 < B.getPathSize())
+			ib++;
 	}
 
 	outFile.close();
 }
 
-int main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {
-	if (argc == 1) {
+	if (argc == 1)
+	{
 		cout << "Uporaba: ./main [datoteka]" << endl;
 		exit(1);
 	}
 
 	ifstream file(argv[1], ios::in);
-	if (!file.is_open()) {
+	if (!file.is_open())
+	{
 		cerr << "Napaka: datoteke ni bilo mogoče odpreti." << endl;
 		exit(1);
 	}
@@ -316,10 +347,11 @@ int main(int argc, char* argv[])
 	cout << droneA.toString() << endl;
 	cout << droneB.toString() << endl;
 
-
 	D22(droneA, droneB);
 
 	// writeToFile(droneA, droneB);
+
+	// print_memory_usage();
 
 	return 0;
 }

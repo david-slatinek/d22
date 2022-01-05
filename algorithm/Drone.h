@@ -9,22 +9,23 @@
 
 using namespace std;
 
-class Drone {
+class Drone
+{
 private:
 	Point startPosition;
 	Point endPosition;
 	Point currentPosition;
-	vector <Point> allCoordinates;
-	vector <Point> pathToEnd;
-	vector <vector<bool>> edges;
+	vector<Point> allCoordinates;
+	vector<Point> pathToEnd;
+	vector<vector<bool>> edges;
 
 	int index = -1;
 	bool end;
+
 public:
 	Drone();
 	Drone(Point startPos, Point endPos, std::vector<Point> allPos);
 	Drone(Point startPos, Point endPos);
-	//virtual ~Drone();
 
 	Point getCurrentPosition() const;
 
