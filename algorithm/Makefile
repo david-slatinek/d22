@@ -8,3 +8,7 @@ compile:
 	g++ -g -O3 -Wall -Wextra -o main Point.o Drone.o main.o
 run:
 	./main demo.txt
+
+val:
+	valgrind --trace-children=yes --error-limit=no --leak-check=full --show-leak-kinds=all --track-origins=yes --show-possibly-lost=yes \
+	--verbose --log-file=out.txt --show-reachable=yes ./main demo.txt
