@@ -123,32 +123,42 @@ void D22(Drone& A, Drone& B) {
 	for (size_t i = 0; i < A.getPathSize()-2; i++)
 	{
 		// če je prišlo do trka, bo B šel okoli te točke
+		//cout<<A.getCoordinate(i+1).toString()<< "in "<< B.getCoordinate(i+1).toString()<<endl;
 		if (A.getCoordinate(i + 1) == B.getCoordinate(i + 1))
 		{
 			cout<<"Trk"<<endl;
 			// shranimo točko pred točko in točko trka
-			Point begin = B.getCoordinate(i);
-			Point collision = B.getCoordinate(i + 1);
-			Point end = B.getCoordinate(i + 2);
 
-			if (collision == Point() || end == Point())
-				break;
+			Drone *droneToMove;
+			Drone *stillDrone;
+			if(B.getCoordinate(i) == B.getCoordinate(i+1) && B.getCoordinate(i+1) == B.getCoordinate(i+1)){
+				droneToMove = &A;
+				stillDrone = &B;
+			}
+			else{
+
+				droneToMove = &B;
+				stillDrone = &A;
+			}
+			Point begin = droneToMove->getCoordinate(i);
+			Point collision = droneToMove->getCoordinate(i + 1);
+			Point end = droneToMove->getCoordinate(i + 2);
+			cout<<begin.toString()<< ", "<< collision.toString()<<" in "<< end.toString()<<endl;
+
+			// if (collision == Point() || end == Point())
+			// 	break;
 
 			Point between_1(0, 0, 0);
 			Point between_2(0, 0, 0);
-			B.removeCoordinateAt(i + 1);
+			droneToMove->removeCoordinateAt(i + 1);
+
 			// izračunamo razlike
 			int beginX = collision.getX() - begin.getX();
 			int beginY = collision.getY() - begin.getY();
 			int beginZ = collision.getZ() - begin.getZ();
 
-			// int endX = end.getX() - collision.getX();
-			// int endY = end.getY() - collision.getY();
-			// int endZ = end.getZ() - collision.getZ();
-
 			int moveX = 0;
 			int moveY = 0;
-			// int moveZ = 0;
 
 			if (abs(beginX) > 0)
 			{
@@ -194,19 +204,19 @@ void D22(Drone& A, Drone& B) {
 			}
 
 			// dodamo v pot
-			A.addToPathAtIndex(i + 1, A.getCoordinate(i + 1));
-			A.addToPathAtIndex(i + 1, A.getCoordinate(i + 1));
+			stillDrone->addToPathAtIndex(i + 1, A.getCoordinate(i + 1));
+			stillDrone->addToPathAtIndex(i + 1, A.getCoordinate(i + 1));
 
-			B.addToPathAtIndex(i + 1, between_1);
-			B.addToPathAtIndex(i + 2, between_2);
+			droneToMove->addToPathAtIndex(i + 1, between_1);
+			droneToMove->addToPathAtIndex(i + 2, between_2);
 
 			between_1.setX(end.getX() + moveX);
 			between_1.setY(end.getY() + moveY);
 			between_1.setZ(end.getZ());
 
 			// dodamo v pot
-			A.addToPathAtIndex(i + 2, A.getCoordinate(i + 1));
-			B.addToPathAtIndex(i + 3, between_1);
+			stillDrone->addToPathAtIndex(i + 2, A.getCoordinate(i + 1));
+			droneToMove->addToPathAtIndex(i + 3, between_1);
 		}
 
 		// preverimo, če je prišlo do izmenjave pozicij
@@ -231,7 +241,6 @@ void D22(Drone& A, Drone& B) {
 			B.addToPathAtIndex(i++, bPrev);
 		}
 	}
-
 
 
 	std::cout << endl << "Rezultat" << endl;
