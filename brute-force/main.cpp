@@ -4,7 +4,7 @@
 #include <climits>
 #include "Drone.h"
 #include "Point.h"
-//#include <sys/resource.h>
+
 
 using namespace std;
 
@@ -211,7 +211,7 @@ void bruteforce(Drone A, Drone B)
 			ib++;
 	}
 
-	
+
 	// izpis za prikaz v Blenderju
 	/*cout << "A:" << endl;
 	for (size_t i = 0; i < (int)min(A.getPathSize(), B.getPathSize()); i++) {

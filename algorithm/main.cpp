@@ -9,24 +9,26 @@
 using namespace std;
 
 int _x = 0, _y = 0, _z = 0;
+Point* curentA;
+Point* curentB;
 
 int GetValue(int start, int end) {
-	int value = start;
 	if (start < end) start = start + 1;
 	else start = start - 1;
 
+	int value = start;
 	// yield value
 	return value;
 }
 
-Point GetVertex(Point start, Point end) {
-	for (int x = _x; x < GetValue(start.getX(), end.getX()); x++) {
-		for (int y = _y; y < GetValue(start.getY(), end.getY()); y++) {
-			for (int z = _z; z < GetValue(start.getZ(), end.getZ()); z++) {
+Point GetVertex(Point start, Point end, Point current) {
+	for (int x = current.getX(); x < GetValue(start.getX(), end.getX()); x++) {
+		for (int y = current.getY(); y < GetValue(start.getY(), end.getY()); y++) {
+			for (int z = current.getZ(); z < GetValue(start.getZ(), end.getZ()); z++) {
 				// yield CreateVertex();
-				_x = x;
-				_y = y;
-				_z = z;
+				current.setX(x);
+				current.setY(y);
+				current.setZ(z);
 				return Point(x, y, z);
 			}
 		}
@@ -47,7 +49,11 @@ bool Feasible(Point a, Point b) {
 }
 
 bool Valid(Point a, Point b) {
-	return sqrt(pow(b.getX() - a.getX(), 2) + pow(b.getY() - a.getY(), 2) + pow(b.getZ() - a.getZ(), 2)) == 1;
+	int lenX = abs(a.getX() - b.getX());
+	int lenY = abs(a.getY() - b.getY());
+	int lenZ = abs(a.getZ() - b.getZ());
+
+	return lenX <= 1 && lenY <= 1 && lenZ <= 1 && (lenX + lenY + lenZ <= 1);
 }
 
 bool pointsOK(Point a, Point b, Point prevA, Point prevB) {
@@ -55,71 +61,186 @@ bool pointsOK(Point a, Point b, Point prevA, Point prevB) {
 }
 
 void D22(Drone& A, Drone& B) {
-	A.addToPath(GetVertex(A.getStartPosition(), A.getEndPosition()));
-	B.addToPath(GetVertex(B.getStartPosition(), B.getEndPosition()));
+	int max_a_X = abs(A.getStartPosition().getX() - A.getEndPosition().getX());
+	int max_a_Y = abs(A.getStartPosition().getY() - A.getEndPosition().getY());
+	int max_a_Z = abs(A.getStartPosition().getZ() - A.getEndPosition().getZ());
+	int max_b_X = abs(B.getStartPosition().getX() - B.getEndPosition().getX());
+	int max_b_Y = abs(B.getStartPosition().getY() - B.getEndPosition().getY());
+	int max_b_Z = abs(B.getStartPosition().getZ() - B.getEndPosition().getZ());
 
-	// accept starting points
+	int a_toward_X = (A.getStartPosition().getX() <= A.getEndPosition().getX() ? 1 : -1);
+	int a_toward_Y = (A.getStartPosition().getY() <= A.getEndPosition().getY() ? 1 : -1);
+	int a_toward_Z = (A.getStartPosition().getZ() <= A.getEndPosition().getZ() ? 1 : -1);
+	int b_toward_X = (B.getStartPosition().getX() <= B.getEndPosition().getX() ? 1 : -1);
+	int b_toward_Y = (B.getStartPosition().getY() <= B.getEndPosition().getY() ? 1 : -1);
+	int b_toward_Z = (B.getStartPosition().getZ() <= B.getEndPosition().getZ() ? 1 : -1);
+
+	int x_to = 0, y_to = 0, z_to = 0;
 	A.addToPath(A.getStartPosition());
-	B.addToPath(B.getStartPosition());
-
-	Point a, b;
-	bool restA, restB;
-	while (!A.IsAtEnd() && !B.IsAtEnd()) {
-		a = GetVertex(A.getStartPosition(), A.getEndPosition());
-		b = GetVertex(B.getStartPosition(), B.getEndPosition());
-
-		// TODO
-
-		if(!A.isEnd()){
-			a = GetVertex(A.getStartPosition(), A.getEndPosition());
-		}
-		if(!B.isEnd()){
-			b = GetVertex(B.getStartPosition(), B.getEndPosition());
-		}
-
-		if(restA && !restB){
-			if(Valid(b, B.getCurrentPosition()) && Feasible(a, b)){
-				B.addToPath(b);
-			}
-			else{
-				B.backtrack(b);
-			}
-		}
-		else if(!restA && restB){
-			if(Valid(a, A.getCurrentPosition()) && Feasible(a, b)){
-				A.addToPath(a);
-			}
-			else{
-				A.backtrack(a);
-			}
-		}
-		else{
-			if(Feasible(a, b)){
-				if(Valid(b, B.getCurrentPosition())){
-					B.addToPath(b);
-
-				}
-				else{
-					B.backtrack(b);
-				}
-
-			}
-			else{
-				if(Valid(a, A.getCurrentPosition()))
+	for (int x = 0; x <= max_a_X; x++)
+	{
+		for (int y = 0; y <= max_a_Y; y++)
+		{
+			for (int z = 0; z <= max_a_Z; z++)
+			{
+				Point new_coord(A.getStartPosition().getX() + x * a_toward_X, A.getStartPosition().getY() + y * a_toward_Y, A.getStartPosition().getZ() + z * a_toward_Z);
+				if (Valid(A.getCoordinate(A.getPathSize() - 1), new_coord))
 				{
-					A.addToPath(a);
-				}
-				else{
-					A.backtrack(a);
-				}
-
-				if(Valid(b, B.getCurrentPosition())){
-					B.addToPath(b);
-				}
-				else{
-					B.backtrack(b);
+					A.addToPath(new_coord);
 				}
 			}
+		}
+	}
+	A.removeCoordinateAt(0); // odstrani duplikacijo 1. koordinate
+
+	x_to = 0, y_to = 0, z_to = 0;
+	B.addToPath(B.getStartPosition());
+	for (int x = 0; x <= max_b_X; x++)
+	{
+		for (int y = 0; y <= max_b_Y; y++)
+		{
+			for (int z = 0; z <= max_b_Z; z++)
+			{
+				Point new_coord(B.getStartPosition().getX() + x * b_toward_X, B.getStartPosition().getY() + y * b_toward_Y, B.getStartPosition().getZ() + z * b_toward_Z);
+				if (Valid(B.getCoordinate(B.getPathSize() - 1), new_coord))
+				{
+					B.addToPath(new_coord);
+				}
+			}
+		}
+	}
+	B.removeCoordinateAt(0); // odstrani duplikacijo 1. koordinate
+
+	// izenačimo dolžino poti
+	while(A.getPathSize() < B.getPathSize()){
+		A.addToPath(A.getEndPosition());
+	}
+
+	while(B.getPathSize() < A.getPathSize()){
+		B.addToPath(B.getEndPosition());
+	}
+
+
+	// preverimo če kje trčita
+	for (size_t i = 0; i < A.getPathSize()-2; i++)
+	{
+		// če je prišlo do trka, bo B šel okoli te točke
+		//cout<<A.getCoordinate(i+1).toString()<< "in "<< B.getCoordinate(i+1).toString()<<endl;
+		if (A.getCoordinate(i + 1) == B.getCoordinate(i + 1))
+		{
+			cout<<"Trk"<<endl;
+			// shranimo točko pred točko in točko trka
+
+			Drone *droneToMove;
+			Drone *stillDrone;
+			if(B.getCoordinate(i) == B.getCoordinate(i+1) && B.getCoordinate(i+1) == B.getCoordinate(i+1)){
+				droneToMove = &A;
+				stillDrone = &B;
+			}
+			else{
+
+				droneToMove = &B;
+				stillDrone = &A;
+			}
+			Point begin = droneToMove->getCoordinate(i);
+			Point collision = droneToMove->getCoordinate(i + 1);
+			Point end = droneToMove->getCoordinate(i + 2);
+			cout<<begin.toString()<< ", "<< collision.toString()<<" in "<< end.toString()<<endl;
+
+			// if (collision == Point() || end == Point())
+			// 	break;
+
+			Point between_1(0, 0, 0);
+			Point between_2(0, 0, 0);
+			droneToMove->removeCoordinateAt(i + 1);
+
+			// izračunamo razlike
+			int beginX = collision.getX() - begin.getX();
+			int beginY = collision.getY() - begin.getY();
+			int beginZ = collision.getZ() - begin.getZ();
+
+			int moveX = 0;
+			int moveY = 0;
+
+			if (abs(beginX) > 0)
+			{
+				// premaknemo po y, da se izognemo trku po x
+				between_1.setX(begin.getX());
+				between_1.setY(begin.getY() + 1);
+				between_1.setZ(begin.getZ());
+
+				// ustrezno premaknemo vzporedno do naslednje tocke
+				between_2.setX(collision.getX());
+				between_2.setY(collision.getY() + 1);
+				between_2.setZ(collision.getZ());
+
+				moveY = 1;
+			}
+			if (abs(beginY) > 0)
+			{
+				// premaknemo po x
+				between_1.setX(begin.getX() + 1);
+				between_1.setY(begin.getY());
+				between_1.setZ(begin.getZ());
+
+				// ustrezno premaknemo vzporedno do naslednje tocke
+				between_2.setX(collision.getX() + 1);
+				between_2.setY(collision.getY());
+				between_2.setZ(collision.getZ());
+
+				moveX = 1;
+			}
+			if (abs(beginZ) > 0)
+			{
+				// premaknemo po x
+				between_1.setX(begin.getX() + 1);
+				between_1.setY(begin.getY());
+				between_1.setZ(begin.getZ());
+
+				// ustrezno premaknemo vzporedno do naslednje tocke
+				between_2.setX(collision.getX() + 1);
+				between_2.setY(collision.getY());
+				between_2.setZ(collision.getZ());
+
+				moveX = 1;
+			}
+
+			// dodamo v pot
+			stillDrone->addToPathAtIndex(i + 1, A.getCoordinate(i + 1));
+			stillDrone->addToPathAtIndex(i + 1, A.getCoordinate(i + 1));
+
+			droneToMove->addToPathAtIndex(i + 1, between_1);
+			droneToMove->addToPathAtIndex(i + 2, between_2);
+
+			between_1.setX(end.getX() + moveX);
+			between_1.setY(end.getY() + moveY);
+			between_1.setZ(end.getZ());
+
+			// dodamo v pot
+			stillDrone->addToPathAtIndex(i + 2, A.getCoordinate(i + 1));
+			droneToMove->addToPathAtIndex(i + 3, between_1);
+		}
+
+		// preverimo, če je prišlo do izmenjave pozicij
+		if (i > 0 && A.getCoordinate(i - 1) == B.getCoordinate(i) && A.getCoordinate(i) == B.getCoordinate(i - 1))
+		{
+			// trenutno je tole hard-coded za primer (6-parallel.in)
+			// TODO - testiraj še na kakšnem primeru
+			cout << "izmenjava" << endl;
+			Point aPrev = A.getCoordinate(i - 1);
+			Point bPrev = B.getCoordinate(i - 1);
+
+			aPrev.setY(aPrev.getY() - 1);
+
+			A.addToPathAtIndex(i, aPrev);
+			B.addToPathAtIndex(i++, bPrev);
+
+			aPrev.setX(aPrev.getX() - 1);
+			B.setIndex(B.getIndex() - 1);
+			bPrev = B.getNext();
+
+			A.addToPathAtIndex(i, aPrev);
+			B.addToPathAtIndex(i++, bPrev);
 		}
 	}
 
@@ -127,7 +248,7 @@ void D22(Drone& A, Drone& B) {
 	std::cout << endl << "Rezultat" << endl;
 	cout << "------------------------" << endl;
 	int ia = 0, ib = 0;
-	for (int i = 0; i < (int)min(A.getPathSize(), B.getPathSize()); i++) {
+	for (int i = 0; i < (int)max(A.getPathSize(), B.getPathSize()); i++) {
 		cout << A.getCoordinate(ia).toString() << " " << B.getCoordinate(ib).toString() << "\n";
 
 		if (ia + 1 < A.getPathSize()) ia++;
@@ -135,16 +256,16 @@ void D22(Drone& A, Drone& B) {
 	}
 
 
-	// izpis za prikaz v Blenderju
-	/*cout << "A:" << endl;
-	for (size_t i = 0; i < (int)min(A.getPathSize(), B.getPathSize()); i++) {
-		cout << A.getCoordinate(i).toString() << ", ";
-	}
+	 //izpis za prikaz v Blenderju
+	 /*cout << "A:" << endl;
+	 for (size_t i = 0; i < A.getPathSize(); i++) {
+	 	cout << A.getCoordinate(i).toString() << ", ";
+	 }
 
-	cout << "\nB:" << endl;
-	for (size_t i = 0; i < (int)min(A.getPathSize(), B.getPathSize()); i++) {
-		cout << B.getCoordinate(i).toString() << ", ";
-	}*/
+	 cout << "\nB:" << endl;
+	 for (size_t i = 0; i < B.getPathSize(); i++) {
+	 	cout << B.getCoordinate(i).toString() << ", ";
+	 }*/
 }
 
 
@@ -152,7 +273,7 @@ void writeToFile(Drone A, Drone B) {
 	ofstream outFile("result.out");
 
 	int ia = 0, ib = 0;
-	for (int i = 0; i < (int)min(A.getPathSize(), B.getPathSize()); i++) {
+	for (int i = 0; i < (int)max(A.getPathSize(), B.getPathSize()); i++) {
 		outFile << A.getCoordinate(ia).toString() << " " << B.getCoordinate(ib).toString() << endl;
 
 		if (ia + 1 < A.getPathSize()) ia++;
@@ -194,6 +315,7 @@ int main(int argc, char* argv[])
 
 	cout << droneA.toString() << endl;
 	cout << droneB.toString() << endl;
+
 
 	D22(droneA, droneB);
 
