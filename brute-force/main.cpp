@@ -4,7 +4,7 @@
 #include <climits>
 #include "Drone.h"
 #include "Point.h"
-#include "main.h"
+
 
 using namespace std;
 

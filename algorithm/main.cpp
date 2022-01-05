@@ -109,27 +109,151 @@ void D22(Drone& A, Drone& B) {
 		}
 	}
 
+	// izenačimo dolžino poti
+	while(A.getPathSize() < B.getPathSize()){
+		A.addToPath(A.getEndPosition());
+	}
+
+	while(B.getPathSize() < A.getPathSize()){
+		B.addToPath(A.getEndPosition());
+	}
+
+
+	// preverimo če kje trčita
+	for (size_t i = 0; i < A.getPathSize()-2; i++)
+	{
+		// če je prišlo do trka, bo B šel okoli te točke
+		if (A.getCoordinate(i + 1) == B.getCoordinate(i + 1))
+		{
+			// shranimo točko pred točko in točko trka
+			Point begin = B.getCoordinate(i);
+			Point collision = B.getCoordinate(i + 1);
+			Point end = B.getCoordinate(i + 2);
+
+			if (collision == Point() || end == Point())
+				break;
+
+			Point between_1(0, 0, 0);
+			Point between_2(0, 0, 0);
+			B.removeCoordinateAt(i + 1);
+			// izračunamo razlike
+			int beginX = collision.getX() - begin.getX();
+			int beginY = collision.getY() - begin.getY();
+			int beginZ = collision.getZ() - begin.getZ();
+
+			// int endX = end.getX() - collision.getX();
+			// int endY = end.getY() - collision.getY();
+			// int endZ = end.getZ() - collision.getZ();
+
+			int moveX = 0;
+			int moveY = 0;
+			// int moveZ = 0;
+
+			if (abs(beginX) > 0)
+			{
+				// premaknemo po y, da se izognemo trku po x
+				between_1.setX(begin.getX());
+				between_1.setY(begin.getY() + 1);
+				between_1.setZ(begin.getZ());
+
+				// ustrezno premaknemo vzporedno do naslednje tocke
+				between_2.setX(collision.getX());
+				between_2.setY(collision.getY() + 1);
+				between_2.setZ(collision.getZ());
+
+				moveY = 1;
+			}
+			if (abs(beginY) > 0)
+			{
+				// premaknemo po x
+				between_1.setX(begin.getX() + 1);
+				between_1.setY(begin.getY());
+				between_1.setZ(begin.getZ());
+
+				// ustrezno premaknemo vzporedno do naslednje tocke
+				between_2.setX(collision.getX() + 1);
+				between_2.setY(collision.getY());
+				between_2.setZ(collision.getZ());
+
+				moveX = 1;
+			}
+			if (abs(beginZ) > 0)
+			{
+				// premaknemo po x
+				between_1.setX(begin.getX() + 1);
+				between_1.setY(begin.getY());
+				between_1.setZ(begin.getZ());
+
+				// ustrezno premaknemo vzporedno do naslednje tocke
+				between_2.setX(collision.getX() + 1);
+				between_2.setY(collision.getY());
+				between_2.setZ(collision.getZ());
+
+				moveX = 1;
+			}
+
+			// dodamo v pot
+			A.addToPathAtIndex(i + 1, A.getCoordinate(i + 1));
+			A.addToPathAtIndex(i + 1, A.getCoordinate(i + 1));
+
+			B.addToPathAtIndex(i + 1, between_1);
+			B.addToPathAtIndex(i + 2, between_2);
+
+			between_1.setX(end.getX() + moveX);
+			between_1.setY(end.getY() + moveY);
+			between_1.setZ(end.getZ());
+
+			// dodamo v pot
+			A.addToPathAtIndex(i + 2, A.getCoordinate(i + 1));
+			B.addToPathAtIndex(i + 3, between_1);
+		}
+
+		// preverimo, če je prišlo do izmenjave pozicij
+		if (i > 0 && A.getCoordinate(i - 1) == B.getCoordinate(i) && A.getCoordinate(i) == B.getCoordinate(i - 1))
+		{
+			// trenutno je tole hard-coded za primer (6-parallel.in)
+			// TODO - testiraj še na kakšnem primeru
+			cout << "izmenjava" << endl;
+			Point aPrev = A.getCoordinate(i - 1);
+			Point bPrev = B.getCoordinate(i - 1);
+
+			aPrev.setY(aPrev.getY() - 1);
+
+			A.addToPathAtIndex(i, aPrev);
+			B.addToPathAtIndex(i++, bPrev);
+
+			aPrev.setX(aPrev.getX() - 1);
+			B.setIndex(B.getIndex() - 1);
+			bPrev = B.getNext();
+
+			A.addToPathAtIndex(i, aPrev);
+			B.addToPathAtIndex(i++, bPrev);
+		}
+	}
+
+
+
 	std::cout << endl << "Rezultat" << endl;
 	cout << "------------------------" << endl;
-	/*int ia = 0, ib = 0;
+	int ia = 0, ib = 0;
 	for (int i = 0; i < (int)max(A.getPathSize(), B.getPathSize()); i++) {
 		cout << A.getCoordinate(ia).toString() << " " << B.getCoordinate(ib).toString() << "\n";
 
 		if (ia + 1 < A.getPathSize()) ia++;
 		if (ib + 1 < B.getPathSize()) ib++;
-	}*/
+	}
 
 
 	// izpis za prikaz v Blenderju
-	cout << "A:" << endl;
-	for (size_t i = 0; i < A.getPathSize(); i++) {
-		cout << A.getCoordinate(i).toString() << ", ";
-	}
+	// cout << "A:" << endl;
+	// for (size_t i = 0; i < A.getPathSize(); i++) {
+	// 	cout << A.getCoordinate(i).toString() << ", ";
+	// }
 
-	cout << "\nB:" << endl;
-	for (size_t i = 0; i < B.getPathSize(); i++) {
-		cout << B.getCoordinate(i).toString() << ", ";
-	}
+	// cout << "\nB:" << endl;
+	// for (size_t i = 0; i < B.getPathSize(); i++) {
+	// 	cout << B.getCoordinate(i).toString() << ", ";
+	// }
 }
 
 
