@@ -91,6 +91,7 @@ void D22(Drone& A, Drone& B) {
 			}
 		}
 	}
+	A.removeCoordinateAt(0); // odstrani duplikacijo 1. koordinate
 
 	x_to = 0, y_to = 0, z_to = 0;
 	B.addToPath(B.getStartPosition());
@@ -108,6 +109,7 @@ void D22(Drone& A, Drone& B) {
 			}
 		}
 	}
+	B.removeCoordinateAt(0); // odstrani duplikacijo 1. koordinate
 
 	// izenačimo dolžino poti
 	while(A.getPathSize() < B.getPathSize()){
@@ -254,16 +256,16 @@ void D22(Drone& A, Drone& B) {
 	}
 
 
-	// izpis za prikaz v Blenderju
-	// cout << "A:" << endl;
-	// for (size_t i = 0; i < A.getPathSize(); i++) {
-	// 	cout << A.getCoordinate(i).toString() << ", ";
-	// }
+	 //izpis za prikaz v Blenderju
+	 /*cout << "A:" << endl;
+	 for (size_t i = 0; i < A.getPathSize(); i++) {
+	 	cout << A.getCoordinate(i).toString() << ", ";
+	 }
 
-	// cout << "\nB:" << endl;
-	// for (size_t i = 0; i < B.getPathSize(); i++) {
-	// 	cout << B.getCoordinate(i).toString() << ", ";
-	// }
+	 cout << "\nB:" << endl;
+	 for (size_t i = 0; i < B.getPathSize(); i++) {
+	 	cout << B.getCoordinate(i).toString() << ", ";
+	 }*/
 }
 
 
