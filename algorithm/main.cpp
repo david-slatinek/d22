@@ -115,7 +115,7 @@ void D22(Drone& A, Drone& B) {
 	}
 
 	while(B.getPathSize() < A.getPathSize()){
-		B.addToPath(A.getEndPosition());
+		B.addToPath(B.getEndPosition());
 	}
 
 
@@ -125,6 +125,7 @@ void D22(Drone& A, Drone& B) {
 		// če je prišlo do trka, bo B šel okoli te točke
 		if (A.getCoordinate(i + 1) == B.getCoordinate(i + 1))
 		{
+			cout<<"Trk"<<endl;
 			// shranimo točko pred točko in točko trka
 			Point begin = B.getCoordinate(i);
 			Point collision = B.getCoordinate(i + 1);
