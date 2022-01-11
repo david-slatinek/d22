@@ -6,7 +6,7 @@
   <img alt="C++" src="https://img.shields.io/badge/C%2B%2B-00599C?style=for-the-badge&logo=c%2B%2B&logoColor=white"/>
 </div>
 
-Seminar paper with a hybrid d22 algorithm using the greedy method and backtracking as a solution for the logistics problem of common journey. We first introduce the problem, describe its representation in the real world, and give its mathematical description. We then give the solution using the brute force method and with the d22 algorithm. Finally, we describe the different test cases and their results, which we also interpret.
+Seminar paper about a hybrid d22 algorithm using the greedy method and backtracking as a solution for the logistics problem of common journey. We first introduce the problem, describe its representation in the real world, and give its mathematical description. We then give the solution using the brute force method and with the d22 algorithm. Finally, we describe the different test cases and their results, which we also interpret.
 
 ## Further reading
 
