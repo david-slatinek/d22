@@ -23,11 +23,8 @@ Drone::Drone(Point startPos, Point endPos)
 {
 	this->startPosition = startPos;
 	this->endPosition = endPos;
-	// this->allCoordinates = allPos;
 	index = -1;
 }
-
-//Drone::~Drone() {}
 
 Point Drone::getCurrentPosition() const
 {

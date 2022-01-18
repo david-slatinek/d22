@@ -26,7 +26,6 @@ public:
 	Drone();
 	Drone(Point startPos, Point endPos, std::vector<Point> allPos);
 	Drone(Point startPos, Point endPos);
-	//virtual ~Drone();
 
 	Point getCurrentPosition() const;
 	int getIndex() const;
