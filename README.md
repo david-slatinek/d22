@@ -44,7 +44,7 @@ Software:
             </td>
             <td align="center">
                 <a href="https://github.com/matejaz">
-                    <img src="https://avatars.githubusercontent.com/u/24374449?v=4" width="100px;" alt="Marcel Iskrač Github avatar"/>
+                    <img src="https://avatars.githubusercontent.com/u/24374449?v=4" width="100px;" alt="Mateja Žvegler Github avatar"/>
                     <br/>
                     <sub><b>Mateja Žvegler</b></sub>
                 </a>
